@@ -1,5 +1,5 @@
-## Database
-```bash
+### Database
+```shell
 sudo docker run -d \
   --name ocserv \
   -e POSTGRES_USER=ocserv \
@@ -10,3 +10,25 @@ sudo docker run -d \
   postgres:latest
 ```
 
+### .env file
+```dotenv
+DEBUG=false
+SECRET_KEY=1234
+HOST=0.0.0.0
+PORT=8080
+ALLOW_ORIGINS=
+
+
+POSTGRES_HOST=127.0.0.1
+POSTGRES_PORT=5435
+POSTGRES_NAME=ocserv
+POSTGRES_USER=ocserv
+POSTGRES_PASSWORD=ocserv
+POSTGRES_SSL_MODE=disable
+```
+
+### Commands
+```shell
+go run main.go migrate
+
+```
