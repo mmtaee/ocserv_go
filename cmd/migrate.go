@@ -2,22 +2,22 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"ocserv/internal/database"
+	"ocserv/pkg/bootstrap"
 )
 
 func init() {
-	rootCmd.AddCommand(makeMigrationsCmd)
+	rootCmd.AddCommand(migrateCmd)
 }
 
-var makeMigrationsCmd = &cobra.Command{
-	Use:   "make-migrations",
-	Short: "Make migration files",
-	Long:  "Make migration files and check database diff",
+var migrateCmd = &cobra.Command{
+	Use:   "migrate",
+	Short: "Migrate models",
+	Long:  "Migrate models in to database",
 	Run: func(cmd *cobra.Command, args []string) {
-		makeMigrations()
+		Migrate()
 	},
 }
 
-func makeMigrations() {
-	database.MakeMigrations()
+func Migrate() {
+	bootstrap.Migrate()
 }

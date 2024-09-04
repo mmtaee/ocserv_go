@@ -49,11 +49,6 @@ func Set() {
 		log.Fatal("SECRET_KEY environment variable not set")
 	}
 
-	shortDomain := os.Getenv("SHORT_DOMAIN")
-	if shortDomain == "" {
-		log.Fatal("SHORT_DOMAIN environment variable not set")
-	}
-
 	host := os.Getenv("HOST")
 	if host == "" {
 		host = "127.0.0.1"
@@ -62,11 +57,12 @@ func Set() {
 	if port == "" {
 		port = "8080"
 	}
+
 	app := App{
 		SecretKey:    secretKey,
 		Host:         host,
 		Port:         port,
-		AllowOrigins: strings.Split(os.Getenv("ALLOW_ORIGINS"), ", "), // not used now
+		AllowOrigins: strings.Split(os.Getenv("ALLOW_ORIGINS"), ", "),
 	}
 
 	db := Db{
@@ -77,7 +73,7 @@ func Set() {
 		Password: os.Getenv("POSTGRES_PASSWORD"),
 	}
 
-	if ssl := os.Getenv("POSTGRES_SSL_MODE"); ssl == "true" {
+	if ssl := os.Getenv("POSTGRES_SSL_MODE"); ssl == "require" {
 		db.SSLMode = "require"
 	} else {
 		db.SSLMode = "disable"
