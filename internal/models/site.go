@@ -9,7 +9,7 @@ type Site struct {
 	ID               uint    `json:"id" gorm:"primaryKey"`
 	CaptchaSiteKey   string  `json:"captcha_site_key" gorm:"varchar(32)"`
 	CaptchaSecretKey string  `json:"captcha_secret_key" gorm:"varchar(32)"`
-	DefaultTraffic   float64 `json:"default_traffic"`
+	DefaultTraffic   float64 `json:"default_traffic" gorm:"not null"`
 }
 
 func (s *Site) BeforeCreate(tx *gorm.DB) (err error) {

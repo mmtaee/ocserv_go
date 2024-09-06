@@ -32,3 +32,10 @@ POSTGRES_SSL_MODE=disable
 go run main.go migrate
 
 ```
+
+### Test
+```shell
+export $(cat .env | xargs) && go test -v ./...
+
+go run main.go test -v
+```

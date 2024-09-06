@@ -31,7 +31,7 @@ type Db struct {
 
 var conf Config
 
-func Set() {
+func LoadEnv() {
 	pwd, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
@@ -43,7 +43,17 @@ func Set() {
 			log.Fatal("Error loading .env file")
 		}
 	}
+}
 
+func LoadTestEnv() {
+	LoadEnv()
+	err := os.Setenv("POSTGRES_NAME", "test")
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func Set() {
 	secretKey := os.Getenv("SECRET_KEY")
 	if secretKey == "" {
 		log.Fatal("SECRET_KEY environment variable not set")

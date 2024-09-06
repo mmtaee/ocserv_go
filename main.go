@@ -1,8 +1,6 @@
 package main
 
-import (
-	"ocserv/cmd"
-)
+import "ocserv/cmd"
 
 func main() {
 	cmd.Execute()

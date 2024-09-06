@@ -7,6 +7,7 @@ import (
 )
 
 func Migrate() {
+	config.LoadEnv()
 	config.Set()
 	database.Connect()
 	migration.Migrate()

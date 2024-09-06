@@ -1,10 +1,13 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type User struct {
 	ID       uint   `json:"id" gorm:"primaryKey"`
-	Username string `json:"username" gorm:"unique;type:varchar(32)"`
+	Username string `json:"username" gorm:"type:varchar(32);unique;not null;<-:create"`
+	Password string `json:"password" gorm:"varchar(64);not null"`
 	IsStaff  bool   `json:"is_staff"`
 	Tokens   Token  `json:"token" gorm:"foreignkey:UserID;constraint:OnDelete:CASCADE"`
 }
@@ -12,15 +15,15 @@ type User struct {
 type Token struct {
 	ID       uint   `json:"id" gorm:"primaryKey"`
 	UserID   uint   `json:"user_id"`
-	Key      string `json:"key" gorm:"varchar(32)"`
+	Key      string `json:"key" gorm:"varchar(32);not null"`
 	ExpireAt int64  `json:"expire_at" gorm:"DEFAULT:0"`
 }
 
 type OcservUser struct {
 	ID             uint            `json:"id" gorm:"primaryKey"`
-	Group          string          `json:"group" gorm:"varchar(32)"`
-	Username       string          `json:"username" gorm:"unique;varchar(32)"`
-	Password       string          `json:"password" gorm:"varchar(64)"`
+	Group          string          `json:"group" gorm:"varchar(32);DEFAULT:'defaults';not null"`
+	Username       string          `json:"username" gorm:"type:varchar(32);unique;not null;<-:create"`
+	Password       string          `json:"password" gorm:"varchar(64);not null"`
 	IsActive       bool            `json:"is_active"`
 	CreatedAt      int64           `json:"created_at"`
 	UpdatedAt      int64           `json:"updated_at"`
