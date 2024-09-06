@@ -35,7 +35,6 @@ type OcservUser struct {
 }
 
 func (s *OcservUser) BeforeCreate(tx *gorm.DB) (err error) {
-	// TODO: call ocserv
 	if s.DefaultTraffic == 0 && s.TrafficType != FREE {
 		var config *Site
 		err = tx.First(&config).Error
@@ -50,14 +49,23 @@ func (s *OcservUser) BeforeCreate(tx *gorm.DB) (err error) {
 	return
 }
 
-func (s *OcservUser) BeforeUpdate(tx *gorm.DB) (err error) {
+func (s *OcservUser) AfterCreate(tx *gorm.DB) (err error) {
 	// TODO: call ocserv
+	return
+}
+
+func (s *OcservUser) BeforeUpdate(tx *gorm.DB) (err error) {
 	if s.TrafficType != FREE && s.TX > s.DefaultTraffic {
 		s.IsActive = false
 	}
 	if s.TrafficType == FREE {
 		s.DefaultTraffic = 0
 	}
+	return
+}
+
+func (s *OcservUser) AfterUpdate(tx *gorm.DB) (err error) {
+	// TODO: call ocserv
 	return
 }
 
