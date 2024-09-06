@@ -2,15 +2,17 @@ package user
 
 import (
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 	"log"
 	"ocserv/internal/models"
 	"ocserv/pkg/testutils"
 	"testing"
 )
 
-var dbUser = testutils.GetTestDB()
+var dbUser *gorm.DB
 
 func init() {
+	dbUser = testutils.GetTestDB()
 	user := &models.User{
 		Username: "test-init",
 		Password: "test-passwd",
