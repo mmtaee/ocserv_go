@@ -1,7 +1,7 @@
 package bootstrap
 
 import (
-	"log"
+	"fmt"
 	"ocserv/pkg/config"
 	"ocserv/pkg/testutils"
 	"os"
@@ -17,12 +17,12 @@ func Test(verbose bool) {
 			"./...",
 		}
 	)
-	log.Println("Configuring test environment and database ...")
+	fmt.Println("Configuring test environment and database ...")
 	config.LoadTestEnv()
 	config.Set()
 	testutils.DropAndCreateDB("test")
 	Migrate()
-	log.Println("Running tests...")
+	fmt.Println("Running tests...")
 
 	if verbose {
 		command = append(command, "-v")
@@ -30,9 +30,11 @@ func Test(verbose bool) {
 
 	out, err = exec.Command("go", command...).CombinedOutput()
 	if err != nil {
-		log.Println("Error running tests:", err)
+		fmt.Println(string(out))
+		fmt.Println("Error running tests:", err)
 		os.Exit(1)
 	}
-	log.Println(string(out))
+	fmt.Println(string(out))
+	fmt.Println("Test Ok")
 	os.Exit(0)
 }

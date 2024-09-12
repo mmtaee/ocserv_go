@@ -15,7 +15,7 @@ type User struct {
 type Token struct {
 	ID       uint   `json:"id" gorm:"primaryKey"`
 	UserID   uint   `json:"user_id"`
-	Key      string `json:"key" gorm:"varchar(32);not null"`
+	Key      string `json:"key" gorm:"varchar(32);not null;unique;<-:create"`
 	ExpireAt int64  `json:"expire_at" gorm:"DEFAULT:0"`
 }
 

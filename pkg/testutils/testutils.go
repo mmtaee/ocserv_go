@@ -11,7 +11,7 @@ import (
 
 func drop(db *gorm.DB, dbName string) {
 	dropDBSQl := fmt.Sprintf("DROP DATABASE IF EXISTS %s", dbName)
-	log.Println(dropDBSQl)
+	fmt.Println(dropDBSQl)
 	err := db.Exec(dropDBSQl).Error
 	if err != nil {
 		log.Fatal(err)
