@@ -5,11 +5,15 @@ import (
 	"ocserv/pkg/bootstrap"
 )
 
-var verbose bool
+var (
+	verbose   bool
+	benchmark bool
+)
 
 func init() {
 	rootCmd.AddCommand(testCmd)
 	testCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose output")
+	testCmd.Flags().BoolVarP(&benchmark, "benchmark", "b", false, "Enable benchmark test")
 }
 
 var testCmd = &cobra.Command{
@@ -22,5 +26,5 @@ var testCmd = &cobra.Command{
 }
 
 func Test() {
-	bootstrap.Test(verbose)
+	bootstrap.Test(benchmark, verbose)
 }

@@ -8,7 +8,7 @@ import (
 	"os/exec"
 )
 
-func Test(verbose bool) {
+func Test(benchmark, verbose bool) {
 	var (
 		out     []byte
 		err     error
@@ -23,11 +23,12 @@ func Test(verbose bool) {
 	testutils.DropAndCreateDB("test")
 	Migrate()
 	fmt.Println("Running tests...")
-
+	if benchmark {
+		command = append(command, "-bench=.")
+	}
 	if verbose {
 		command = append(command, "-v")
 	}
-
 	out, err = exec.Command("go", command...).CombinedOutput()
 	if err != nil {
 		fmt.Println(string(out))

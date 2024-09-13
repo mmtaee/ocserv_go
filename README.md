@@ -37,5 +37,10 @@ go run main.go migrate
 ```shell
 export $(cat .env | xargs) && go test -v ./...
 
+# verbose mode
 go run main.go test -v
+
+# benchmark testing
+go run main.go test -b 
+
 ```
