@@ -17,6 +17,24 @@ func NewSiteController() *Controller {
 	}
 }
 
+// Get godoc
+// @Summary      Get site configuration
+// @Description  Get site configuration
+// @Tags         site
+// @Produce      json
+// @Success      200  {object}  models.Site
+// @Failure      400  {object}  map[string]string  "error": "Error message"
+// @Example 400 {object} {"error": "Detailed error message"}
+// @Router       /api/site [get]
+func (controller *Controller) Get(c *gin.Context) {
+	site, err := controller.siteRepository.Get()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, site)
+}
+
 func (controller *Controller) Create(c *gin.Context) {
 	type Data struct {
 		CaptchaSiteKey   string  `json:"captcha_site_key"  binding:"omitempty"`
@@ -43,15 +61,6 @@ func (controller *Controller) Create(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": site})
-}
-
-func (controller *Controller) Get(c *gin.Context) {
-	site, err := controller.siteRepository.Get()
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, site)
 }
 
 func (controller *Controller) Update(c *gin.Context) {

@@ -1,0 +1,56 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/api/site": {
+            "get": {
+                "description": "Get site configuration",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "site"
+                ],
+                "summary": "Get site configuration",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Site"
+                        }
+                    },
+                    "400": {
+                        "description": "error\": \"Error message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Site": {
+            "type": "object",
+            "properties": {
+                "captcha_secret_key": {
+                    "type": "string"
+                },
+                "captcha_site_key": {
+                    "type": "string"
+                },
+                "default_traffic": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}

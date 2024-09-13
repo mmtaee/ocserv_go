@@ -7,7 +7,7 @@ import (
 
 func Routes(router *gin.RouterGroup) {
 	site := NewSiteController()
-	group := router.Group("/config")
+	group := router.Group("/site")
 	group.POST("/", site.Create)
 	group.GET("/", site.Get)
 	group.PATCH("/", middleware.TokenMiddleware(), site.Update)
