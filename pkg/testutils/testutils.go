@@ -7,7 +7,16 @@ import (
 	"log"
 	"ocserv/pkg/config"
 	"ocserv/pkg/database"
+	"os"
 )
+
+func LoadTestEnv() {
+	config.LoadEnv()
+	err := os.Setenv("POSTGRES_NAME", "test")
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
 func drop(db *gorm.DB, dbName string) {
 	dropDBSQl := fmt.Sprintf("DROP DATABASE IF EXISTS %s", dbName)
@@ -45,7 +54,7 @@ func DropAndCreateDB(dbName string) {
 }
 
 func GetTestDB() *gorm.DB {
-	config.LoadTestEnv()
+	LoadTestEnv()
 	config.Set()
 	database.Connect()
 	return database.Connection()

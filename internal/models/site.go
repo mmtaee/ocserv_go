@@ -21,5 +21,15 @@ func (s *Site) BeforeCreate(tx *gorm.DB) (err error) {
 	if count > 0 {
 		return errors.New("site config already exists")
 	}
+	if s.DefaultTraffic <= 0 {
+		s.DefaultTraffic = 1
+	}
+	return
+}
+
+func (s *Site) BeforeUpdate(tx *gorm.DB) (err error) {
+	if s.DefaultTraffic <= 0 {
+		s.DefaultTraffic = 1
+	}
 	return
 }

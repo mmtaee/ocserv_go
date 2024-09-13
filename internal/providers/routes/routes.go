@@ -1,8 +1,11 @@
 package routes
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	ApiConfigRouter "ocserv/internal/api/site"
+)
 
 // Register routers from api registering here
-func Register(router *gin.Engine) {
-
+func Register(router *gin.RouterGroup) {
+	ApiConfigRouter.Routes(router)
 }

@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"gorm.io/gorm"
 	"log"
 	"ocserv/internal/models"
@@ -13,12 +14,12 @@ func migrateEnums(db *gorm.DB) {
 	err := db.Exec(`CREATE TYPE service_type_enum AS ENUM ('FREE', 'MONTHLY', 'TOTALLY');`).Error
 	if err != nil {
 		if strings.Contains(err.Error(), "type \"service_type_enum\" already exists") {
-			log.Println("Type \"service_type_enum\" Already Exists. Continue Migrating ...")
+			fmt.Println("Type \"service_type_enum\" Already Exists. Continue Migrating ...")
 		} else {
 			log.Fatal(err)
 		}
 	} else {
-		log.Println("Type \"service_type_enum\" Created Successfully ...")
+		fmt.Println("Type \"service_type_enum\" Created Successfully ...")
 	}
 }
 
@@ -31,5 +32,5 @@ func Migrate() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("Database Migration Completed Successfully ...")
+	fmt.Println("Database Migration Completed Successfully ...")
 }

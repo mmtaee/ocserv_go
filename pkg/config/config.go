@@ -45,14 +45,6 @@ func LoadEnv() {
 	}
 }
 
-func LoadTestEnv() {
-	LoadEnv()
-	err := os.Setenv("POSTGRES_NAME", "test")
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 func Set() {
 	secretKey := os.Getenv("SECRET_KEY")
 	if secretKey == "" {

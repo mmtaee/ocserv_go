@@ -18,7 +18,7 @@ func Test(benchmark, verbose bool) {
 		}
 	)
 	fmt.Println("Configuring test environment and database ...")
-	config.LoadTestEnv()
+	testutils.LoadTestEnv()
 	config.Set()
 	testutils.DropAndCreateDB("test")
 	Migrate()

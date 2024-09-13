@@ -10,5 +10,6 @@ func Serve() {
 	config.LoadEnv()
 	config.Set()
 	database.Connect()
+	routing.Init()
 	routing.Serve()
 }

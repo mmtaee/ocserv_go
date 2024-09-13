@@ -5,9 +5,9 @@ import "fmt"
 type ServiceTypeEnum string
 
 const (
-	FREE    ServiceTypeEnum = "FREE"
-	MONTHLY ServiceTypeEnum = "MONTHLY"
-	TOTALLY ServiceTypeEnum = "TOTALLY"
+	FREE    ServiceTypeEnum = "FREE"    // The user uses the service without restrictions
+	MONTHLY ServiceTypeEnum = "MONTHLY" // The user uses the service with a monthly usage limit
+	TOTALLY ServiceTypeEnum = "TOTALLY" // The user uses the service with a limited Rx-TX
 )
 
 func (s *ServiceTypeEnum) Scan(value interface{}) error {
