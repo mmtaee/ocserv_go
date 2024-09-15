@@ -31,7 +31,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      network: build_network
     networks:
         - build_network
     environment:
