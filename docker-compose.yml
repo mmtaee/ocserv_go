@@ -1,6 +1,10 @@
 volumes:
   ocserv_db:
 
+networks:
+  build_network:
+    external: true
+
 x-postgres: &postgres
   POSTGRES_NAME: ocserv
   POSTGRES_USER: ocserv
@@ -27,6 +31,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      network: build_network
+    networks:
+        - build_network
     environment:
       <<: *postgres
       POSTGRES_HOST: postgres

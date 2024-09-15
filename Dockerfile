@@ -5,9 +5,6 @@ ENV GIN_MODE=release
 ENV CGO_ENABLED=0
 ENV GOOS=linux
 
-RUN echo "nameserver 178.22.122.100" > /etc/resolv.conf && \
-    echo "nameserver 185.51.200.2" >> /etc/resolv.conf
-
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
