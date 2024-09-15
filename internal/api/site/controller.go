@@ -23,24 +23,27 @@ func NewSiteController() *Controller {
 // @Tags         site
 // @Produce      json
 // @Success      200  {object}  models.Site
-// @Failure      400  {object}  map[string]string  "error": "Error message"
-// @Example 400 {object} {"error": "Detailed error message"}
-// @Router       /api/site [get]
+// @Failure      400  {object}  nil
+// @Router       /api/v1/site/ [get]
 func (controller *Controller) Get(c *gin.Context) {
 	site, err := controller.siteRepository.Get()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, site)
 }
 
+// Create godoc
+// @Summary      Post site configuration
+// @Description  Post site configuration
+// @Tags         site
+// @Produce      json
+// @Param        site  body      Data  true  "Request Body"
+// @Success      200  {object}  models.Site
+// @Failure      400  {object}  nil
+// @Router       /api/v1/site/ [post]
 func (controller *Controller) Create(c *gin.Context) {
-	type Data struct {
-		CaptchaSiteKey   string  `json:"captcha_site_key"  binding:"omitempty"`
-		CaptchaSecretKey string  `json:"captcha_secret_key"  binding:"omitempty"`
-		DefaultTraffic   float64 `json:"default_traffic" binding:"required"`
-	}
 	var data Data
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -63,6 +66,17 @@ func (controller *Controller) Create(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": site})
 }
 
+// Update godoc
+// @Summary      Update site configuration
+// @Description  Update site configuration
+// @Tags         site
+// @Produce      json
+// @Param        Authorization header string true "Bearer token"
+// @Param        site  body     DataUpdate  false  "Request Body"
+// @Success      200  {object}  models.Site
+// @Failure      400  {object}  nil
+// @Failure      401  {object}  nil
+// @Router       /api/v1/site/ [patch]
 func (controller *Controller) Update(c *gin.Context) {
 	if isStaff, exists := c.Get("isStaff"); !exists || !isStaff.(bool) {
 		c.JSON(http.StatusForbidden, gin.H{
@@ -71,13 +85,7 @@ func (controller *Controller) Update(c *gin.Context) {
 		return
 	}
 
-	type Data struct {
-		CaptchaSiteKey   string  `json:"captcha_site_key"  binding:"omitempty"`
-		CaptchaSecretKey string  `json:"captcha_secret_key"  binding:"omitempty"`
-		DefaultTraffic   float64 `json:"default_traffic"  binding:"omitempty"`
-	}
-
-	var data Data
+	var data DataUpdate
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

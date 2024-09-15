@@ -10,10 +10,30 @@ definitions:
       id:
         type: integer
     type: object
+  site.Data:
+    properties:
+      captcha_secret_key:
+        type: string
+      captcha_site_key:
+        type: string
+      default_traffic:
+        type: number
+    required:
+    - default_traffic
+    type: object
+  site.DataUpdate:
+    properties:
+      captcha_secret_key:
+        type: string
+      captcha_site_key:
+        type: string
+      default_traffic:
+        type: number
+    type: object
 info:
   contact: {}
 paths:
-  /api/site:
+  /api/v1/site/:
     get:
       description: Get site configuration
       produces:
@@ -24,12 +44,56 @@ paths:
           schema:
             $ref: '#/definitions/models.Site'
         "400":
-          description: 'error": "Error message'
-          schema:
-            additionalProperties:
-              type: string
-            type: object
+          description: Bad Request
       summary: Get site configuration
+      tags:
+      - site
+    patch:
+      description: Update site configuration
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Request Body
+        in: body
+        name: site
+        schema:
+          $ref: '#/definitions/site.DataUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Site'
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+      summary: Update site configuration
+      tags:
+      - site
+    post:
+      description: Post site configuration
+      parameters:
+      - description: Request Body
+        in: body
+        name: site
+        required: true
+        schema:
+          $ref: '#/definitions/site.Data'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Site'
+        "400":
+          description: Bad Request
+      summary: Post site configuration
       tags:
       - site
 swagger: "2.0"

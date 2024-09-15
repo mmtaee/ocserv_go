@@ -53,7 +53,7 @@ func Set() {
 
 	host := os.Getenv("HOST")
 	if host == "" {
-		host = "127.0.0.1"
+		host = "0.0.0.0"
 	}
 	port := os.Getenv("PORT")
 	if port == "" {

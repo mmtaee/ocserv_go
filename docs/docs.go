@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/site": {
+        "/api/v1/site/": {
             "get": {
                 "description": "Get site configuration",
                 "produces": [
@@ -33,13 +33,80 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "error\": \"Error message",
+                        "description": "Bad Request"
+                    }
+                }
+            },
+            "post": {
+                "description": "Post site configuration",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "site"
+                ],
+                "summary": "Post site configuration",
+                "parameters": [
+                    {
+                        "description": "Request Body",
+                        "name": "site",
+                        "in": "body",
+                        "required": true,
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/site.Data"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Site"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update site configuration",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "site"
+                ],
+                "summary": "Update site configuration",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Request Body",
+                        "name": "site",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/site.DataUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Site"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 }
             }
@@ -60,6 +127,37 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                }
+            }
+        },
+        "site.Data": {
+            "type": "object",
+            "required": [
+                "default_traffic"
+            ],
+            "properties": {
+                "captcha_secret_key": {
+                    "type": "string"
+                },
+                "captcha_site_key": {
+                    "type": "string"
+                },
+                "default_traffic": {
+                    "type": "number"
+                }
+            }
+        },
+        "site.DataUpdate": {
+            "type": "object",
+            "properties": {
+                "captcha_secret_key": {
+                    "type": "string"
+                },
+                "captcha_site_key": {
+                    "type": "string"
+                },
+                "default_traffic": {
+                    "type": "number"
                 }
             }
         }

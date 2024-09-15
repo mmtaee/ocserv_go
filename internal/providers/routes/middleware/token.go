@@ -17,7 +17,7 @@ func unauthorized(c *gin.Context) {
 func TokenMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenKey := c.Request.Header.Get("Authorization")
-		tokenKey = strings.TrimPrefix(tokenKey, "Token ")
+		tokenKey = strings.TrimPrefix(tokenKey, "Bearer ")
 		if tokenKey == "" {
 			unauthorized(c)
 			return
