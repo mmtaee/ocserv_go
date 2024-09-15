@@ -63,7 +63,7 @@ func (controller *Controller) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": site})
+	c.JSON(http.StatusCreated, site)
 }
 
 // Update godoc
@@ -78,7 +78,7 @@ func (controller *Controller) Create(c *gin.Context) {
 // @Failure      401  {object}  nil
 // @Router       /api/v1/site/ [patch]
 func (controller *Controller) Update(c *gin.Context) {
-	if isStaff, exists := c.Get("isStaff"); !exists || !isStaff.(bool) {
+	if isStaff, exists := c.Get("isStaff"); !exists || isStaff.(bool) {
 		c.JSON(http.StatusForbidden, gin.H{
 			"error": "only admin can update site configs",
 		})
@@ -91,8 +91,12 @@ func (controller *Controller) Update(c *gin.Context) {
 		return
 	}
 
-	var site models.Site
-	if data.DefaultTraffic <= 0 {
+	site, err := controller.siteRepository.Get()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if data.DefaultTraffic != 0 {
 		site.DefaultTraffic = data.DefaultTraffic
 	}
 	if data.CaptchaSiteKey != "" {
@@ -101,10 +105,10 @@ func (controller *Controller) Update(c *gin.Context) {
 	if data.CaptchaSecretKey != "" {
 		site.CaptchaSecretKey = data.CaptchaSecretKey
 	}
-	update, err := controller.siteRepository.Update(&site)
+	_, err = controller.siteRepository.Update(site)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, update)
+	c.JSON(http.StatusAccepted, nil)
 }

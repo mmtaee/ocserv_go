@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"gorm.io/gorm"
 	"log"
+	"ocserv/internal/models"
 	"ocserv/pkg/config"
 	"ocserv/pkg/database"
+	tokenGenerator "ocserv/pkg/token"
 	"os"
+	"time"
 )
 
 func LoadTestEnv() {
@@ -58,4 +61,35 @@ func GetTestDB() *gorm.DB {
 	config.Set()
 	database.Connect()
 	return database.Connection()
+}
+
+func CreateTestAdminUser() *models.User {
+	db := database.Connection()
+	user := models.User{
+		Username: "test-admin",
+		Password: "test-admin-password",
+		IsStaff:  false,
+	}
+	err := db.Create(&user).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+	return &user
+}
+
+func CreateTestAdminToken(user *models.User) string {
+	db := database.Connection()
+	expireAt := time.Now().Add(time.Hour).Unix()
+	key := tokenGenerator.Create(user.ID, expireAt)
+
+	token := models.Token{
+		UserID:   user.ID,
+		ExpireAt: expireAt,
+		Key:      key,
+	}
+	err := db.Create(&token).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+	return token.Key
 }

@@ -18,6 +18,10 @@ func Init() {
 	router = gin.Default()
 }
 
+func GetRouter() *gin.Engine {
+	return router
+}
+
 func RegisterRoutes() {
 	configs := config.GetApp()
 	corsConfig := cors.DefaultConfig()
@@ -25,8 +29,9 @@ func RegisterRoutes() {
 	corsConfig.AllowCredentials = true
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "Authorization")
 	//corsConfig.AllowMethods = append(corsConfig.AllowMethods, "POST", "GET", "OPTIONS")
-	router.Use(cors.New(corsConfig))
-	apiGroup := router.Group("/api/v1/")
+	r := GetRouter()
+	r.Use(cors.New(corsConfig))
+	apiGroup := r.Group("/api/v1/")
 	routes.Register(apiGroup)
 }
 
