@@ -8,7 +8,7 @@ x-postgres: &postgres
 
 services:
   database:
-    image: postgres:latest
+    image: postgres:13-alpine
     container_name: postgres_url
     restart: unless-stopped
     environment: *postgres
