@@ -9,9 +9,9 @@ import (
 )
 
 // MakeHash create hash from password with salt string
-func MakeHash(password, salt string) string {
+func MakeHash(password string) string {
 	app := config.GetApp()
-	saltPassword := fmt.Sprintf("%s%s%s", password, salt, app.SecretKey)
+	saltPassword := fmt.Sprintf("%s%s", password, app.SecretKey)
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(saltPassword), 10)
 	if err != nil {
 		return ""
@@ -20,9 +20,9 @@ func MakeHash(password, salt string) string {
 }
 
 // Compare check password with hash
-func Compare(password, salt, hashedPassword string) bool {
+func Compare(password, hashedPassword string) bool {
 	app := config.GetApp()
-	saltPassword := fmt.Sprintf("%s%s%s", password, salt, app.SecretKey)
+	saltPassword := fmt.Sprintf("%s%s", password, app.SecretKey)
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(saltPassword))
 	return err == nil
 }

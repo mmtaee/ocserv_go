@@ -35,13 +35,13 @@ func RegisterRoutes() {
 	routes.Register(apiGroup)
 }
 
+// Serve godoc
 // @title           Ocserv Backend Example API
 // @version         1.0
 // @description     This is Ocserv Backend Api Doc server.
 // @contact.name    API Support
 // @host      localhost:8080
 // @BasePath  /api/v1
-
 func Serve() {
 	cfg := config.GetApp()
 	RegisterRoutes()
@@ -50,7 +50,10 @@ func Serve() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	if cfg.Debug {
+		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
 	server := fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)
 	fmt.Println("server running on " + server)
 	err = router.Run(server)

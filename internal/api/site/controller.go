@@ -39,12 +39,12 @@ func (controller *Controller) Get(c *gin.Context) {
 // @Description  Post site configuration
 // @Tags         site
 // @Produce      json
-// @Param        site  body      Data  true  "Request Body"
+// @Param        site  body      CreateData  true  "Request Body"
 // @Success      200  {object}  models.Site
 // @Failure      400  {object}  nil
 // @Router       /api/v1/site/ [post]
 func (controller *Controller) Create(c *gin.Context) {
-	var data Data
+	var data CreateData
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -72,7 +72,7 @@ func (controller *Controller) Create(c *gin.Context) {
 // @Tags         site
 // @Produce      json
 // @Param        Authorization header string true "Bearer token"
-// @Param        site  body     DataUpdate  false  "Request Body"
+// @Param        site  body     UpdateData  false  "Request Body"
 // @Success      200  {object}  models.Site
 // @Failure      400  {object}  nil
 // @Failure      401  {object}  nil
@@ -85,7 +85,7 @@ func (controller *Controller) Update(c *gin.Context) {
 		return
 	}
 
-	var data DataUpdate
+	var data UpdateData
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

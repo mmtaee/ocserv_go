@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -14,6 +15,7 @@ type Config struct {
 }
 
 type App struct {
+	Debug        bool
 	Host         string
 	Port         string
 	SecretKey    string
@@ -65,6 +67,13 @@ func Set() {
 		Host:         host,
 		Port:         port,
 		AllowOrigins: strings.Split(os.Getenv("ALLOW_ORIGINS"), ", "),
+	}
+
+	debug, err := strconv.Atoi(os.Getenv("DEBUG"))
+	if err != nil {
+		app.Debug = true
+	} else {
+		app.Debug = debug == 1
 	}
 
 	db := Db{

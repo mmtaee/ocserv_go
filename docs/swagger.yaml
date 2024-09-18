@@ -10,7 +10,31 @@ definitions:
       id:
         type: integer
     type: object
-  site.Data:
+  models.Token:
+    properties:
+      expire_at:
+        type: integer
+      id:
+        type: integer
+      key:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      id:
+        type: integer
+      is_admin:
+        type: boolean
+      password:
+        type: string
+      token:
+        $ref: '#/definitions/models.Token'
+      username:
+        type: string
+    type: object
+  site.CreateData:
     properties:
       captcha_secret_key:
         type: string
@@ -21,7 +45,7 @@ definitions:
     required:
     - default_traffic
     type: object
-  site.DataUpdate:
+  site.UpdateData:
     properties:
       captcha_secret_key:
         type: string
@@ -29,6 +53,26 @@ definitions:
         type: string
       default_traffic:
         type: number
+    type: object
+  user.CreateData:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  user.UpdateData:
+    properties:
+      current_password:
+        type: string
+      new_password:
+        type: string
+    required:
+    - current_password
+    - new_password
     type: object
 info:
   contact: {}
@@ -60,7 +104,7 @@ paths:
         in: body
         name: site
         schema:
-          $ref: '#/definitions/site.DataUpdate'
+          $ref: '#/definitions/site.UpdateData'
       produces:
       - application/json
       responses:
@@ -83,7 +127,7 @@ paths:
         name: site
         required: true
         schema:
-          $ref: '#/definitions/site.Data'
+          $ref: '#/definitions/site.CreateData'
       produces:
       - application/json
       responses:
@@ -96,4 +140,46 @@ paths:
       summary: Post site configuration
       tags:
       - site
+  /api/v1/user/:
+    post:
+      description: Set up an admin or superuser during site initialization
+      parameters:
+      - description: Request Body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.CreateData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+      summary: Set up an admin user
+      tags:
+      - user
+  /api/v1/user/password/:
+    patch:
+      description: Update admin or staff user password
+      parameters:
+      - description: Request Body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.UpdateData'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+        "400":
+          description: Bad Request
+      summary: Update Password
+      tags:
+      - user
 swagger: "2.0"

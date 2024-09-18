@@ -53,7 +53,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/site.Data"
+                            "$ref": "#/definitions/site.CreateData"
                         }
                     }
                 ],
@@ -91,7 +91,7 @@ const docTemplate = `{
                         "name": "site",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/site.DataUpdate"
+                            "$ref": "#/definitions/site.UpdateData"
                         }
                     }
                 ],
@@ -107,6 +107,71 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/api/v1/user/": {
+            "post": {
+                "description": "Set up an admin or superuser during site initialization",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Set up an admin user",
+                "parameters": [
+                    {
+                        "description": "Request Body",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.CreateData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
+        "/api/v1/user/password/": {
+            "patch": {
+                "description": "Update admin or staff user password",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Update Password",
+                "parameters": [
+                    {
+                        "description": "Request Body",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.UpdateData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted"
+                    },
+                    "400": {
+                        "description": "Bad Request"
                     }
                 }
             }
@@ -130,7 +195,44 @@ const docTemplate = `{
                 }
             }
         },
-        "site.Data": {
+        "models.Token": {
+            "type": "object",
+            "properties": {
+                "expire_at": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "is_admin": {
+                    "type": "boolean"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "token": {
+                    "$ref": "#/definitions/models.Token"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "site.CreateData": {
             "type": "object",
             "required": [
                 "default_traffic"
@@ -147,7 +249,7 @@ const docTemplate = `{
                 }
             }
         },
-        "site.DataUpdate": {
+        "site.UpdateData": {
             "type": "object",
             "properties": {
                 "captcha_secret_key": {
@@ -158,6 +260,36 @@ const docTemplate = `{
                 },
                 "default_traffic": {
                     "type": "number"
+                }
+            }
+        },
+        "user.CreateData": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.UpdateData": {
+            "type": "object",
+            "required": [
+                "current_password",
+                "new_password"
+            ],
+            "properties": {
+                "current_password": {
+                    "type": "string"
+                },
+                "new_password": {
+                    "type": "string"
                 }
             }
         }

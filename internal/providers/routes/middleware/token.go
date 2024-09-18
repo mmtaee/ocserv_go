@@ -33,7 +33,8 @@ func TokenMiddleware() gin.HandlerFunc {
 			return
 		}
 		c.Set("userId", user.ID)
-		c.Set("isStaff", user.IsStaff)
+		c.Set("user", user)
+		c.Set("isAdmin", user.IsAdmin)
 		c.Next()
 	}
 }

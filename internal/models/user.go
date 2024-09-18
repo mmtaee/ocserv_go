@@ -4,7 +4,7 @@ type User struct {
 	ID       uint   `json:"id" gorm:"primaryKey"`
 	Username string `json:"username" gorm:"type:varchar(32);unique;not null;<-:create"`
 	Password string `json:"password" gorm:"varchar(64);not null"`
-	IsStaff  bool   `json:"is_staff"`
+	IsAdmin  bool   `json:"is_admin" gorm:"default:false"`
 	Tokens   Token  `json:"token" gorm:"foreignkey:UserID;constraint:OnDelete:CASCADE"`
 }
 

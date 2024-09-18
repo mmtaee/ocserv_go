@@ -68,7 +68,7 @@ func CreateTestAdminUser() *models.User {
 	user := models.User{
 		Username: "test-admin",
 		Password: "test-admin-password",
-		IsStaff:  false,
+		IsAdmin:  true,
 	}
 	err := db.Create(&user).Error
 	if err != nil {
