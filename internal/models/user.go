@@ -1,5 +1,10 @@
 package models
 
+import (
+	"gorm.io/gorm"
+	tokenGenerator "ocserv/pkg/token"
+)
+
 type User struct {
 	ID       uint   `json:"id" gorm:"primaryKey"`
 	Username string `json:"username" gorm:"type:varchar(32);unique;not null;<-:create"`
@@ -13,4 +18,9 @@ type Token struct {
 	UserID   uint   `json:"user_id"`
 	Key      string `json:"key" gorm:"varchar(32);not null;unique;<-:create"`
 	ExpireAt int64  `json:"expire_at" gorm:"DEFAULT:0"`
+}
+
+func (t *Token) BeforeCreate(tx *gorm.DB) (err error) {
+	t.Key = tokenGenerator.Create(t.UserID, t.ExpireAt)
+	return nil
 }

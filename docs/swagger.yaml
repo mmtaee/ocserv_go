@@ -10,30 +10,6 @@ definitions:
       id:
         type: integer
     type: object
-  models.Token:
-    properties:
-      expire_at:
-        type: integer
-      id:
-        type: integer
-      key:
-        type: string
-      user_id:
-        type: integer
-    type: object
-  models.User:
-    properties:
-      id:
-        type: integer
-      is_admin:
-        type: boolean
-      password:
-        type: string
-      token:
-        $ref: '#/definitions/models.Token'
-      username:
-        type: string
-    type: object
   site.CreateData:
     properties:
       captcha_secret_key:
@@ -63,6 +39,46 @@ definitions:
     required:
     - password
     - username
+    type: object
+  user.CreateLoginData:
+    properties:
+      password:
+        type: string
+      remember_me:
+        type: boolean
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  user.CreateResponse:
+    properties:
+      admin:
+        type: boolean
+      id:
+        type: integer
+      username:
+        type: string
+    required:
+    - username
+    type: object
+  user.CreateStaffData:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  user.LoginResponse:
+    properties:
+      expire_at:
+        type: integer
+      token:
+        type: string
     type: object
   user.UpdateData:
     properties:
@@ -156,15 +172,37 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/user.CreateResponse'
         "400":
           description: Bad Request
       summary: Set up an admin user
       tags:
       - user
+  /api/v1/user/login/:
+    post:
+      description: Login admin or staff user to get token
+      parameters:
+      - description: Request Body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.CreateLoginData'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/user.LoginResponse'
+        "400":
+          description: Bad Request
+      summary: Login
+      tags:
+      - user
   /api/v1/user/password/:
-    patch:
-      description: Update admin or staff user password
+    post:
+      description: Update admin or staff user password (self change)
       parameters:
       - description: Request Body
         in: body
@@ -172,6 +210,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/user.UpdateData'
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -180,6 +223,89 @@ paths:
         "400":
           description: Bad Request
       summary: Update Password
+      tags:
+      - user
+  /api/v1/user/staffs/:
+    post:
+      description: Create staff user
+      parameters:
+      - description: Request Body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.CreateStaffData'
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/user.CreateResponse'
+        "400":
+          description: Bad Request
+        "403":
+          description: Admin Permission required
+      summary: Create staff user
+      tags:
+      - user
+  /api/v1/user/staffs/:id/:
+    delete:
+      description: Delete staff user(by admin)
+      parameters:
+      - description: Request Body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.UpdateData'
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "403":
+          description: Admin Permission required
+        "404":
+          description: Not Found
+      summary: Delete staff
+      tags:
+      - user
+  /api/v1/user/staffs/:id/password/:
+    post:
+      description: Update staff user password(by admin)
+      parameters:
+      - description: Request Body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.UpdateData'
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+        "400":
+          description: Bad Request
+        "403":
+          description: Admin Permission required
+      summary: Update staff password
       tags:
       - user
 swagger: "2.0"

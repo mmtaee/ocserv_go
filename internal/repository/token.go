@@ -11,6 +11,7 @@ type TokenRepository struct {
 }
 type TokenRepositoryInterface interface {
 	GetTokenByKey(string) (*models.User, *models.Token, error)
+	Create(*models.Token) (*models.Token, error)
 }
 
 func NewTokenRepository() *TokenRepository {
@@ -58,4 +59,28 @@ func (t *TokenRepository) GetTokenByKey(key string) (*models.User, *models.Token
 	}()
 	result := <-ch
 	return result.user, result.token, result.err
+}
+
+func (t *TokenRepository) Create(token *models.Token) (*models.Token, error) {
+	ch := make(chan struct {
+		token *models.Token
+		err   error
+	})
+
+	go func() {
+		err := t.db.Create(token).Error
+		if err != nil {
+			ch <- struct {
+				token *models.Token
+				err   error
+			}{nil, err}
+			return
+		}
+		ch <- struct {
+			token *models.Token
+			err   error
+		}{token, err}
+	}()
+	result := <-ch
+	return result.token, result.err
 }
