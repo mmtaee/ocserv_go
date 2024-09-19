@@ -8,7 +8,9 @@ ENV GOOS=linux
 WORKDIR /app
 COPY go.mod go.sum ./
 
-COPY /root/mimetype-1.4.3 .
+RUN mkdir /tmp/mimetype-1.4.3
+
+COPY /root/mimetype-1.4.3 /tmp/mimetype-1.4.3
 
 RUN mkdir -p /usr/local/go/bin/src/github.com/gabriel-vasile/mimetype
 
