@@ -64,4 +64,3 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/gabriel-vasile/mimetype => /usr/local/go/bin/src/github.com/gabriel-vasile/mimetype
