@@ -7,15 +7,13 @@ ENV GOOS=linux
 
 WORKDIR /app
 
-ADD v1.4.3.tar.gz .
+COPY go.mod go.sum ./
 
 RUN mkdir -p /usr/local/go/bin/src/github.com/gabriel-vasile/mimetype
 
+ADD v1.4.3.tar.gz /app/
+
 RUN mv ./mimetype-1.4.3/* /usr/local/go/bin/src/github.com/gabriel-vasile/mimetype
-
-RUN cd /usr/local/go/bin/src/github.com/gabriel-vasile/mimetype && go install
-
-COPY go.mod go.sum ./
 
 RUN echo 'replace github.com/gabriel-vasile/mimetype => /usr/local/go/bin/src/github.com/gabriel-vasile/mimetype' >> go.mod
 
