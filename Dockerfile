@@ -19,7 +19,7 @@ COPY go.mod go.sum ./
 
 RUN echo 'replace github.com/gabriel-vasile/mimetype => /usr/local/go/bin/src/github.com/gabriel-vasile/mimetype' >> go.mod
 
-RUN go mod download
+RUN go mod tidy
 
 COPY . .
 
