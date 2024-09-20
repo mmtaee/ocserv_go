@@ -1,0 +1,11 @@
+FROM alpine:latest
+
+WORKDIR /app
+
+COPY  ./ocserv_api .
+
+COPY ./scripts/server.sh /server.sh
+
+RUN chmod +x /app/ocserv_api /server.sh
+
+ENTRYPOINT ["/server.sh"]

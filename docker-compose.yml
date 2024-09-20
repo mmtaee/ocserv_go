@@ -26,7 +26,7 @@ services:
     restart: on-failure
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-dev
     environment:
       <<: *postgres
       POSTGRES_HOST: postgres
