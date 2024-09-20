@@ -1,7 +1,5 @@
 FROM golang:1.23 AS builder
 
-LABEL authors="masoud"
-
 ENV GIN_MODE=release
 ENV CGO_ENABLED=0
 ENV GOOS=linux
