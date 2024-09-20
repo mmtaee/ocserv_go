@@ -111,7 +111,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/user/": {
+        "/api/v1/users/": {
             "post": {
                 "description": "Set up an admin or superuser during site initialization",
                 "produces": [
@@ -145,7 +145,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/user/login/": {
+        "/api/v1/users/login/": {
             "post": {
                 "description": "Login admin or staff user to get token",
                 "produces": [
@@ -179,8 +179,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/user/password/": {
-            "post": {
+        "/api/v1/users/password/": {
+            "patch": {
                 "description": "Update admin or staff user password (self change)",
                 "produces": [
                     "application/json"
@@ -217,7 +217,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/user/staffs/": {
+        "/api/v1/users/staffs/": {
             "post": {
                 "description": "Create staff user",
                 "produces": [
@@ -261,7 +261,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/user/staffs/:id/": {
+        "/api/v1/users/staffs/:id/": {
             "delete": {
                 "description": "Delete staff user(by admin)",
                 "produces": [
@@ -302,8 +302,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/user/staffs/:id/password/": {
-            "post": {
+        "/api/v1/users/staffs/:id/password/": {
+            "patch": {
                 "description": "Update staff user password(by admin)",
                 "produces": [
                     "application/json"
@@ -319,7 +319,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.UpdateData"
+                            "$ref": "#/definitions/user.UpdateStaffPasswordData"
                         }
                     },
                     {
@@ -339,6 +339,9 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Admin Permission required"
+                    },
+                    "404": {
+                        "description": "User not found"
                     }
                 }
             }
@@ -432,11 +435,11 @@ const docTemplate = `{
                 "username"
             ],
             "properties": {
-                "admin": {
-                    "type": "boolean"
-                },
                 "id": {
                     "type": "integer"
+                },
+                "is_admin": {
+                    "type": "boolean"
                 },
                 "username": {
                     "type": "string"
@@ -480,6 +483,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "new_password": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.UpdateStaffPasswordData": {
+            "type": "object",
+            "required": [
+                "password"
+            ],
+            "properties": {
+                "password": {
                     "type": "string"
                 }
             }

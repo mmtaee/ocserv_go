@@ -54,10 +54,10 @@ definitions:
     type: object
   user.CreateResponse:
     properties:
-      admin:
-        type: boolean
       id:
         type: integer
+      is_admin:
+        type: boolean
       username:
         type: string
     required:
@@ -89,6 +89,13 @@ definitions:
     required:
     - current_password
     - new_password
+    type: object
+  user.UpdateStaffPasswordData:
+    properties:
+      password:
+        type: string
+    required:
+    - password
     type: object
 info:
   contact: {}
@@ -156,7 +163,7 @@ paths:
       summary: Post site configuration
       tags:
       - site
-  /api/v1/user/:
+  /api/v1/users/:
     post:
       description: Set up an admin or superuser during site initialization
       parameters:
@@ -178,7 +185,7 @@ paths:
       summary: Set up an admin user
       tags:
       - user
-  /api/v1/user/login/:
+  /api/v1/users/login/:
     post:
       description: Login admin or staff user to get token
       parameters:
@@ -200,8 +207,8 @@ paths:
       summary: Login
       tags:
       - user
-  /api/v1/user/password/:
-    post:
+  /api/v1/users/password/:
+    patch:
       description: Update admin or staff user password (self change)
       parameters:
       - description: Request Body
@@ -225,7 +232,7 @@ paths:
       summary: Update Password
       tags:
       - user
-  /api/v1/user/staffs/:
+  /api/v1/users/staffs/:
     post:
       description: Create staff user
       parameters:
@@ -254,7 +261,7 @@ paths:
       summary: Create staff user
       tags:
       - user
-  /api/v1/user/staffs/:id/:
+  /api/v1/users/staffs/:id/:
     delete:
       description: Delete staff user(by admin)
       parameters:
@@ -281,8 +288,8 @@ paths:
       summary: Delete staff
       tags:
       - user
-  /api/v1/user/staffs/:id/password/:
-    post:
+  /api/v1/users/staffs/:id/password/:
+    patch:
       description: Update staff user password(by admin)
       parameters:
       - description: Request Body
@@ -290,7 +297,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/user.UpdateData'
+          $ref: '#/definitions/user.UpdateStaffPasswordData'
       - description: Bearer token
         in: header
         name: Authorization
@@ -305,6 +312,8 @@ paths:
           description: Bad Request
         "403":
           description: Admin Permission required
+        "404":
+          description: User not found
       summary: Update staff password
       tags:
       - user
