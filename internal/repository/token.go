@@ -68,7 +68,7 @@ func (t *TokenRepository) Create(token *models.Token) (*models.Token, error) {
 	})
 
 	go func() {
-		err := t.db.Create(token).Error
+		err := t.db.Create(&token).Error
 		if err != nil {
 			ch <- struct {
 				token *models.Token

@@ -17,14 +17,14 @@ func init() {
 }
 
 func TestCreatePassword(t *testing.T) {
-	hash := MakeHash(password, salt)
+	hash := MakeHash(password)
 	assert.NotEmpty(t, hash)
 }
 
 func TestCheckHash(t *testing.T) {
-	hash := MakeHash(password, salt)
+	hash := MakeHash(password)
 	assert.NotEmpty(t, hash)
-	check := Compare(password, salt, hash)
+	check := Compare(password, hash)
 	assert.True(t, check)
 }
 
@@ -36,7 +36,7 @@ func TestCreateRandom(t *testing.T) {
 
 func BenchmarkCreateHash(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		MakeHash(fmt.Sprintf("%s%d", password, i), salt)
+		MakeHash(fmt.Sprintf("%s%d", password, i))
 	}
 }
 

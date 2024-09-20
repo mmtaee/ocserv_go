@@ -8,7 +8,6 @@ import (
 	"ocserv/internal/models"
 	"ocserv/pkg/config"
 	"ocserv/pkg/database"
-	tokenGenerator "ocserv/pkg/token"
 	"os"
 	"time"
 )
@@ -77,19 +76,25 @@ func CreateTestAdminUser() *models.User {
 	return &user
 }
 
-func CreateTestAdminToken(user *models.User) string {
+func CreateTestAdminToken(userID uint) string {
 	db := database.Connection()
 	expireAt := time.Now().Add(time.Hour).Unix()
-	key := tokenGenerator.Create(user.ID, expireAt)
 
 	token := models.Token{
-		UserID:   user.ID,
+		UserID:   userID,
 		ExpireAt: expireAt,
-		Key:      key,
 	}
 	err := db.Create(&token).Error
 	if err != nil {
 		log.Fatal(err)
 	}
 	return token.Key
+}
+
+func DeleteTestAdminUser() {
+	db := database.Connection()
+	err := db.Where("is_admin = ?", true).Delete(&models.User{}).Error
+	if err != nil {
+		log.Fatal(err)
+	}
 }

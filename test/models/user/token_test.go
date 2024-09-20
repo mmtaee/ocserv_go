@@ -22,7 +22,7 @@ func init() {
 	user := &models.User{
 		Username: "test-init-token",
 		Password: "test-passwd",
-		IsStaff:  true,
+		IsAdmin:  false,
 	}
 	err := dbToken.Create(&user).Error
 	if err != nil {
@@ -53,7 +53,8 @@ func TestCreateToken(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotEqual(t, token.ID, uint(0))
 	assert.Equal(t, token.ExpireAt, expireAtCreate)
-	assert.Equal(t, token.Key, "test-key")
+	t.Log(token.Key)
+	assert.NotEqual(t, token.Key, "test-key")
 }
 
 func TestUpdateToken(t *testing.T) {

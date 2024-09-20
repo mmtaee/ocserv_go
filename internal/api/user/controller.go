@@ -2,6 +2,7 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"ocserv/internal/models"
 	"ocserv/internal/repository"
@@ -17,7 +18,8 @@ type Controller struct {
 
 func NewUserController() *Controller {
 	return &Controller{
-		userRepository: repository.NewUserRepository(),
+		userRepository:  repository.NewUserRepository(),
+		tokenRepository: repository.NewTokenRepository(),
 	}
 }
 
@@ -29,7 +31,7 @@ func NewUserController() *Controller {
 // @Param        user  body      CreateData  true  "Request Body"
 // @Success      200  {object}  CreateResponse
 // @Failure      400  {object}  nil
-// @Router       /api/v1/user/ [post]
+// @Router       /api/v1/users/ [post]
 func (controller *Controller) CreateAdminUser(c *gin.Context) {
 	var data CreateData
 	err := c.ShouldBindJSON(&data)
@@ -73,7 +75,7 @@ func (controller *Controller) CreateAdminUser(c *gin.Context) {
 // @Param        user  body CreateLoginData  true  "Request Body"
 // @Success      201 {object} LoginResponse
 // @Failure      400  {object}  nil
-// @Router       /api/v1/user/login/ [post]
+// @Router       /api/v1/users/login/ [post]
 func (controller *Controller) Login(c *gin.Context) {
 	var data CreateLoginData
 	err := c.ShouldBindJSON(&data)
@@ -91,6 +93,7 @@ func (controller *Controller) Login(c *gin.Context) {
 	if data.RememberMe {
 		expireAt = time.Now().Add(30 * 24 * time.Hour).Unix()
 	}
+
 	tokenObj := models.Token{
 		UserID:   user.ID,
 		ExpireAt: expireAt,
@@ -101,6 +104,8 @@ func (controller *Controller) Login(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	log.Println("token.ExpireAt: ", token.ExpireAt)
 	c.JSON(http.StatusCreated, LoginResponse{
 		Token:    token.Key,
 		ExpireAt: token.ExpireAt,
@@ -116,7 +121,7 @@ func (controller *Controller) Login(c *gin.Context) {
 // @Param        Authorization header string true "Bearer token"
 // @Success      202
 // @Failure      400  {object}  nil
-// @Router       /api/v1/user/password/ [post]
+// @Router       /api/v1/users/password/ [post]
 func (controller *Controller) UpdatePassword(c *gin.Context) {
 	var data UpdateData
 	err := c.ShouldBindJSON(&data)
@@ -155,7 +160,7 @@ func (controller *Controller) UpdatePassword(c *gin.Context) {
 // @Success      201 {object} CreateResponse
 // @Failure      403 {object} nil "Admin Permission required"
 // @Failure      400  {object}  nil
-// @Router       /api/v1/user/staffs/ [post]
+// @Router       /api/v1/users/staffs/ [post]
 func (controller *Controller) CreateStaff(c *gin.Context) {
 	isAdmin, _ := c.Get("isAdmin")
 	if !isAdmin.(bool) {
@@ -197,7 +202,7 @@ func (controller *Controller) CreateStaff(c *gin.Context) {
 // @Success      202
 // @Failure      400  {object}  nil
 // @Failure      403 {object} nil "Admin Permission required"
-// @Router       /api/v1/user/staffs/:id/password/ [post]
+// @Router       /api/v1/users/staffs/:id/password/ [post]
 func (controller *Controller) UpdateStaffPassword(c *gin.Context) {
 	isAdmin, _ := c.Get("isAdmin")
 	if !isAdmin.(bool) {
@@ -243,7 +248,7 @@ func (controller *Controller) UpdateStaffPassword(c *gin.Context) {
 // @Success      204
 // @Failure      404  {object}  nil
 // @Failure      403 {object} nil "Admin Permission required"
-// @Router       /api/v1/user/staffs/:id/ [delete]
+// @Router       /api/v1/users/staffs/:id/ [delete]
 func (controller *Controller) DeleteStaff(c *gin.Context) {
 	isAdmin, _ := c.Get("isAdmin")
 	if !isAdmin.(bool) {

@@ -14,5 +14,5 @@ func Authenticate(repository repository.UserRepositoryInterface, data CreateLogi
 	if ok := password.Compare(data.Password, user.Password); !ok {
 		return nil, false
 	}
-	return user, false
+	return user, true
 }

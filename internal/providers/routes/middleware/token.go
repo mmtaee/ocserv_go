@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"ocserv/internal/repository"
 	"strings"
@@ -32,6 +33,7 @@ func TokenMiddleware() gin.HandlerFunc {
 			unauthorized(c)
 			return
 		}
+		log.Println(user)
 		c.Set("userId", user.ID)
 		c.Set("user", user)
 		c.Set("isAdmin", user.IsAdmin)

@@ -78,10 +78,9 @@ func (controller *Controller) Create(c *gin.Context) {
 // @Failure      401  {object}  nil
 // @Router       /api/v1/site/ [patch]
 func (controller *Controller) Update(c *gin.Context) {
-	if isStaff, exists := c.Get("isStaff"); !exists || isStaff.(bool) {
-		c.JSON(http.StatusForbidden, gin.H{
-			"error": "only admin can update site configs",
-		})
+	isAdmin, _ := c.Get("isAdmin")
+	if !isAdmin.(bool) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Admin Permission required"})
 		return
 	}
 

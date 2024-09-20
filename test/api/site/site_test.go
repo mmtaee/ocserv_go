@@ -14,6 +14,7 @@ import (
 	"ocserv/pkg/database"
 	"ocserv/pkg/routing"
 	"ocserv/pkg/testutils"
+	"os"
 	"strings"
 	"testing"
 )
@@ -25,12 +26,6 @@ var (
 	adminToken     string
 )
 
-func addRoutes() {
-	router.GET("/api/v1/site/", siteController.Get)
-	router.POST("/api/v1/site/", siteController.Create)
-	router.PATCH("/api/v1/site/", middleware.TokenMiddleware(), siteController.Update)
-}
-
 func init() {
 	testutils.LoadTestEnv()
 	config.Set()
@@ -40,7 +35,19 @@ func init() {
 	router = routing.GetRouter()
 	addRoutes()
 	adminUser = testutils.CreateTestAdminUser()
-	adminToken = testutils.CreateTestAdminToken(adminUser)
+	adminToken = testutils.CreateTestAdminToken(adminUser.ID)
+}
+
+func addRoutes() {
+	router.GET("/api/v1/site/", siteController.Get)
+	router.POST("/api/v1/site/", siteController.Create)
+	router.PATCH("/api/v1/site/", middleware.TokenMiddleware(), siteController.Update)
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	defer testutils.DeleteTestAdminUser()
+	os.Exit(code)
 }
 
 func TestSiteCreate(t *testing.T) {
@@ -96,8 +103,8 @@ func TestSiteUpdate(t *testing.T) {
 	req, _ := http.NewRequest("PATCH", "/api/v1/site/", strings.NewReader(string(jsonBody)))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", adminToken))
+
 	router.ServeHTTP(w, req)
-	t.Log(w.Body.String())
 	assert.Equal(t, 202, w.Code)
 
 	var responseData map[string]interface{}

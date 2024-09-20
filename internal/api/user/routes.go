@@ -7,7 +7,7 @@ import (
 
 func Routes(router *gin.RouterGroup) {
 	user := NewUserController()
-	group := router.Group("/user")
+	group := router.Group("/users")
 	group.POST("/", user.CreateAdminUser)
 	group.POST("/login/", user.Login)
 	group.POST("/password/", middleware.TokenMiddleware(), user.UpdatePassword)

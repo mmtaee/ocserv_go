@@ -16,7 +16,7 @@ func init() {
 	user := &models.User{
 		Username: "test-init",
 		Password: "test-passwd",
-		IsStaff:  true,
+		IsAdmin:  false,
 	}
 	err := dbUser.Create(&user).Error
 	if err != nil {
@@ -28,7 +28,7 @@ func TestCreateUser(t *testing.T) {
 	user := &models.User{
 		Username: "test",
 		Password: "test-passwd",
-		IsStaff:  false,
+		IsAdmin:  false,
 	}
 	err := dbUser.Create(&user).Error
 	assert.Nil(t, err)
