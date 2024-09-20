@@ -29,7 +29,7 @@ func (t *TokenRepository) GetTokenByKey(key string) (*models.User, *models.Token
 
 	go func() {
 		var token *models.Token
-		err := t.db.Where("key = ?", key).First(&token).Joins("User").Error
+		err := t.db.Where("key = ?", key).First(&token).Error
 
 		if err != nil {
 			ch <- struct {
@@ -41,7 +41,7 @@ func (t *TokenRepository) GetTokenByKey(key string) (*models.User, *models.Token
 		}
 
 		var user *models.User
-		err = t.db.First(&user, token.UserID).Error
+		err = t.db.Where("id = ? ", token.UserID).First(&user).Error
 		if err != nil {
 			ch <- struct {
 				user  *models.User

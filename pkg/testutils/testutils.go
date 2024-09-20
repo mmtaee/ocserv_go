@@ -18,6 +18,10 @@ func LoadTestEnv() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	err = os.Setenv("GIN_MODE", "release")
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func drop(db *gorm.DB, dbName string) {
@@ -97,4 +101,18 @@ func DeleteTestAdminUser() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func CreateTestStaffUser() *models.User {
+	staff := models.User{
+		Username: "staff-test-utils-test",
+		Password: "staff-test-passwd",
+		IsAdmin:  false,
+	}
+	db := database.Connection()
+	err := db.Create(&staff).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+	return &staff
 }

@@ -2,7 +2,6 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"ocserv/internal/models"
 	"ocserv/internal/repository"
@@ -63,7 +62,7 @@ func (controller *Controller) CreateAdminUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, CreateResponse{
 		ID:       newUser.ID,
 		Username: newUser.Username,
-		Admin:    newUser.IsAdmin,
+		IsAdmin:  newUser.IsAdmin,
 	})
 }
 
@@ -105,7 +104,6 @@ func (controller *Controller) Login(c *gin.Context) {
 		return
 	}
 
-	log.Println("token.ExpireAt: ", token.ExpireAt)
 	c.JSON(http.StatusCreated, LoginResponse{
 		Token:    token.Key,
 		ExpireAt: token.ExpireAt,
@@ -121,7 +119,7 @@ func (controller *Controller) Login(c *gin.Context) {
 // @Param        Authorization header string true "Bearer token"
 // @Success      202
 // @Failure      400  {object}  nil
-// @Router       /api/v1/users/password/ [post]
+// @Router       /api/v1/users/password/ [patch]
 func (controller *Controller) UpdatePassword(c *gin.Context) {
 	var data UpdateData
 	err := c.ShouldBindJSON(&data)
@@ -129,13 +127,8 @@ func (controller *Controller) UpdatePassword(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if data.CurrentPassword != data.NewPassword {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "old password and new password do not match"})
-		return
-	}
-
 	userContext, _ := c.Get("user")
-	user := userContext.(models.User)
+	user := userContext.(*models.User)
 
 	if checkPassword := password.Compare(data.CurrentPassword, user.Password); !checkPassword {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid old password"})
@@ -188,7 +181,7 @@ func (controller *Controller) CreateStaff(c *gin.Context) {
 	c.JSON(http.StatusCreated, CreateResponse{
 		ID:       newUser.ID,
 		Username: newUser.Username,
-		Admin:    newUser.IsAdmin,
+		IsAdmin:  newUser.IsAdmin,
 	})
 }
 
@@ -197,12 +190,13 @@ func (controller *Controller) CreateStaff(c *gin.Context) {
 // @Description  Update staff user password(by admin)
 // @Tags         user
 // @Produce      json
-// @Param        user  body UpdateData  true  "Request Body"
+// @Param        user  body UpdateStaffPasswordData  true  "Request Body"
 // @Param        Authorization header string true "Bearer token"
 // @Success      202
 // @Failure      400  {object}  nil
 // @Failure      403 {object} nil "Admin Permission required"
-// @Router       /api/v1/users/staffs/:id/password/ [post]
+// @Failure      404 {object} nil "User not found"
+// @Router       /api/v1/users/staffs/:id/password/ [patch]
 func (controller *Controller) UpdateStaffPassword(c *gin.Context) {
 	isAdmin, _ := c.Get("isAdmin")
 	if !isAdmin.(bool) {
@@ -210,15 +204,10 @@ func (controller *Controller) UpdateStaffPassword(c *gin.Context) {
 		return
 	}
 
-	var data UpdateData
+	var data UpdateStaffPasswordData
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if data.CurrentPassword != data.NewPassword {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "old password and new password do not match"})
 		return
 	}
 
@@ -226,11 +215,11 @@ func (controller *Controller) UpdateStaffPassword(c *gin.Context) {
 	id, _ := strconv.Atoi(idParam)
 	user, err := controller.userRepository.GetUserById(id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = controller.userRepository.UpdatePassword(user.ID, data.NewPassword)
+	err = controller.userRepository.UpdatePassword(user.ID, data.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

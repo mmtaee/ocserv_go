@@ -53,7 +53,6 @@ func TestCreateToken(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotEqual(t, token.ID, uint(0))
 	assert.Equal(t, token.ExpireAt, expireAtCreate)
-	t.Log(token.Key)
 	assert.NotEqual(t, token.Key, "test-key")
 }
 

@@ -10,10 +10,14 @@ type UpdateData struct {
 	NewPassword     string `json:"new_password" binding:"required"`
 }
 
+type UpdateStaffPasswordData struct {
+	Password string `json:"password" binding:"required"`
+}
+
 type CreateResponse struct {
 	ID       uint   `json:"id"`
 	Username string `json:"username" binding:"required"`
-	Admin    bool   `json:"admin"`
+	IsAdmin  bool   `json:"is_admin"`
 }
 
 type CreateStaffData struct {
