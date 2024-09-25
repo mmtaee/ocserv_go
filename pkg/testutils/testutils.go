@@ -22,6 +22,10 @@ func LoadTestEnv() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	err = os.Setenv("DEBUG", "false")
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func drop(db *gorm.DB, dbName string) {

@@ -32,6 +32,7 @@ func init() {
 	testutils.LoadTestEnv()
 	config.Set()
 	database.Connect()
+	testutils.DeleteTestAdminUser()
 	routing.Init()
 	userController = user.NewUserController()
 	router = routing.GetRouter()
