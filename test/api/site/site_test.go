@@ -9,7 +9,7 @@ import (
 	"net/http/httptest"
 	"ocserv/internal/api/site"
 	"ocserv/internal/models"
-	"ocserv/internal/providers/routes/middleware"
+	"ocserv/internal/providers/middlewares"
 	"ocserv/pkg/config"
 	"ocserv/pkg/database"
 	"ocserv/pkg/routing"
@@ -41,7 +41,7 @@ func init() {
 func addRoutes() {
 	router.GET("/api/v1/site/", siteController.Get)
 	router.POST("/api/v1/site/", siteController.Create)
-	router.PATCH("/api/v1/site/", middleware.TokenMiddleware(), siteController.Update)
+	router.PATCH("/api/v1/site/", middlewares.TokenMiddleware(), middlewares.IsAdminMiddleware(), siteController.Update)
 }
 
 func TestMain(m *testing.M) {

@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
-	"ocserv/internal/providers/routes/middleware"
+	"ocserv/internal/providers/middlewares"
 )
 
 func Routes(router *gin.RouterGroup) {
@@ -10,10 +10,10 @@ func Routes(router *gin.RouterGroup) {
 	group := router.Group("/users")
 	group.POST("/", user.CreateAdminUser)
 	group.POST("/login/", user.Login)
-	group.PATCH("/password/", middleware.TokenMiddleware(), user.UpdatePassword)
+	group.PATCH("/password/", middlewares.TokenMiddleware(), user.UpdatePassword)
 
-	staffGroup := group.Group("/", middleware.TokenMiddleware())
-	staffGroup.POST("/staffs/", user.CreateStaff)
-	staffGroup.PATCH("/staffs/:id/password/", user.UpdateStaffPassword)
-	staffGroup.DELETE("staffs/:id/", user.DeleteStaff)
+	staffGroup := group.Group("/", middlewares.TokenMiddleware())
+	staffGroup.POST("/staffs/", middlewares.IsAdminMiddleware(), user.CreateStaff)
+	staffGroup.PATCH("/staffs/:id/password/", middlewares.IsAdminMiddleware(), user.UpdateStaffPassword)
+	staffGroup.DELETE("staffs/:id/", middlewares.IsAdminMiddleware(), user.DeleteStaff)
 }

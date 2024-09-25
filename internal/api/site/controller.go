@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"ocserv/internal/models"
 	"ocserv/internal/repository"
+	"ocserv/pkg/errors"
 )
 
 type Controller struct {
@@ -46,7 +47,7 @@ func (controller *Controller) Get(c *gin.Context) {
 func (controller *Controller) Create(c *gin.Context) {
 	var data CreateData
 	if err := c.ShouldBindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, errors.InvalidBodyError(err))
 		return
 	}
 	if data.DefaultTraffic <= 0 {
@@ -78,15 +79,9 @@ func (controller *Controller) Create(c *gin.Context) {
 // @Failure      401  {object}  nil
 // @Router       /api/v1/site/ [patch]
 func (controller *Controller) Update(c *gin.Context) {
-	isAdmin, _ := c.Get("isAdmin")
-	if !isAdmin.(bool) {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Admin Permission required"})
-		return
-	}
-
 	var data UpdateData
 	if err := c.ShouldBindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, errors.InvalidBodyError(err))
 		return
 	}
 

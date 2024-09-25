@@ -9,7 +9,7 @@ import (
 	"net/http/httptest"
 	"ocserv/internal/api/user"
 	"ocserv/internal/models"
-	"ocserv/internal/providers/routes/middleware"
+	"ocserv/internal/providers/middlewares"
 	"ocserv/pkg/config"
 	"ocserv/pkg/database"
 	"ocserv/pkg/routing"
@@ -45,12 +45,12 @@ func init() {
 func addRoutes() {
 	router.POST("/api/v1/users/", userController.CreateAdminUser)
 	router.POST("/api/v1/users/login/", userController.Login)
-	router.PATCH("/api/v1/users/password/", middleware.TokenMiddleware(), userController.UpdatePassword)
+	router.PATCH("/api/v1/users/password/", middlewares.TokenMiddleware(), userController.UpdatePassword)
 
-	staffGroup := router.Group("/api/v1/users/staffs/", middleware.TokenMiddleware())
-	staffGroup.POST("/", userController.CreateStaff)
-	staffGroup.PATCH("/:id/password/", userController.UpdateStaffPassword)
-	staffGroup.DELETE("/:id/", userController.DeleteStaff)
+	staffGroup := router.Group("/api/v1/users/staffs/", middlewares.TokenMiddleware())
+	staffGroup.POST("/", middlewares.IsAdminMiddleware(), userController.CreateStaff)
+	staffGroup.PATCH("/:id/password/", middlewares.IsAdminMiddleware(), userController.UpdateStaffPassword)
+	staffGroup.DELETE("/:id/", middlewares.IsAdminMiddleware(), userController.DeleteStaff)
 }
 
 func TestMain(m *testing.M) {

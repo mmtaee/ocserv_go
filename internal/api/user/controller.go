@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"ocserv/internal/models"
 	"ocserv/internal/repository"
+	"ocserv/pkg/errors"
 	"ocserv/pkg/password"
 	"strconv"
 	"time"
@@ -33,9 +34,9 @@ func NewUserController() *Controller {
 // @Router       /api/v1/users/ [post]
 func (controller *Controller) CreateAdminUser(c *gin.Context) {
 	var data CreateData
-	err := c.ShouldBindJSON(&data)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, errors.InvalidBodyError(err))
 		return
 	}
 
@@ -77,9 +78,10 @@ func (controller *Controller) CreateAdminUser(c *gin.Context) {
 // @Router       /api/v1/users/login/ [post]
 func (controller *Controller) Login(c *gin.Context) {
 	var data CreateLoginData
-	err := c.ShouldBindJSON(&data)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, errors.InvalidBodyError(err))
+		return
 	}
 
 	user, ok := Authenticate(controller.userRepository, data)
@@ -122,9 +124,9 @@ func (controller *Controller) Login(c *gin.Context) {
 // @Router       /api/v1/users/password/ [patch]
 func (controller *Controller) UpdatePassword(c *gin.Context) {
 	var data UpdateData
-	err := c.ShouldBindJSON(&data)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, errors.InvalidBodyError(err))
 		return
 	}
 	userContext, _ := c.Get("user")
@@ -135,7 +137,7 @@ func (controller *Controller) UpdatePassword(c *gin.Context) {
 		return
 	}
 
-	err = controller.userRepository.UpdatePassword(user.ID, data.NewPassword)
+	err := controller.userRepository.UpdatePassword(user.ID, data.NewPassword)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -155,16 +157,10 @@ func (controller *Controller) UpdatePassword(c *gin.Context) {
 // @Failure      400  {object}  nil
 // @Router       /api/v1/users/staffs/ [post]
 func (controller *Controller) CreateStaff(c *gin.Context) {
-	isAdmin, _ := c.Get("isAdmin")
-	if !isAdmin.(bool) {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Admin Permission required"})
-		return
-	}
-
 	var data CreateStaffData
-	err := c.ShouldBindJSON(&data)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, errors.InvalidBodyError(err))
 		return
 	}
 	user := models.User{
@@ -198,16 +194,10 @@ func (controller *Controller) CreateStaff(c *gin.Context) {
 // @Failure      404 {object} nil "User not found"
 // @Router       /api/v1/users/staffs/:id/password/ [patch]
 func (controller *Controller) UpdateStaffPassword(c *gin.Context) {
-	isAdmin, _ := c.Get("isAdmin")
-	if !isAdmin.(bool) {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Admin Permission required"})
-		return
-	}
-
 	var data UpdateStaffPasswordData
-	err := c.ShouldBindJSON(&data)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, errors.InvalidBodyError(err))
 		return
 	}
 
@@ -239,15 +229,8 @@ func (controller *Controller) UpdateStaffPassword(c *gin.Context) {
 // @Failure      403 {object} nil "Admin Permission required"
 // @Router       /api/v1/users/staffs/:id/ [delete]
 func (controller *Controller) DeleteStaff(c *gin.Context) {
-	isAdmin, _ := c.Get("isAdmin")
-	if !isAdmin.(bool) {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Admin Permission required"})
-		return
-	}
-
 	idParam := c.Param("id")
 	id, _ := strconv.Atoi(idParam)
-
 	err := controller.userRepository.DeleteStaffUserByID(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
