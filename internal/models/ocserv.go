@@ -15,6 +15,7 @@ type OcservUser struct {
 	TX             float64         `json:"tx"`
 	DefaultTraffic float64         `json:"default_traffic"`
 	TrafficType    ServiceTypeEnum `json:"traffic_type" gorm:"varchar(16);default:'FREE'"`
+	IsOnline       bool            `json:"is_online" gorm:"-:migration;->"`
 }
 
 func (s *OcservUser) BeforeCreate(tx *gorm.DB) (err error) {
@@ -32,11 +33,6 @@ func (s *OcservUser) BeforeCreate(tx *gorm.DB) (err error) {
 	return
 }
 
-func (s *OcservUser) AfterCreate(tx *gorm.DB) (err error) {
-	// TODO: call ocserv
-	return
-}
-
 func (s *OcservUser) BeforeUpdate(tx *gorm.DB) (err error) {
 	if s.TrafficType != FREE && s.TX > s.DefaultTraffic {
 		s.IsActive = false
@@ -44,15 +40,5 @@ func (s *OcservUser) BeforeUpdate(tx *gorm.DB) (err error) {
 	if s.TrafficType == FREE {
 		s.DefaultTraffic = 0
 	}
-	return
-}
-
-func (s *OcservUser) AfterUpdate(tx *gorm.DB) (err error) {
-	// TODO: call ocserv
-	return
-}
-
-func (s *OcservUser) AfterDelete(tx *gorm.DB) (err error) {
-	// TODO: call ocserv
 	return
 }

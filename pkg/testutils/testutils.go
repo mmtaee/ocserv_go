@@ -79,7 +79,7 @@ func CreateTestAdminUser() *models.User {
 	}
 	err := db.Create(&user).Error
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	return &user
 }

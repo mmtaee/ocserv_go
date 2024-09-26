@@ -10,4 +10,7 @@ func Routes(router *gin.RouterGroup) {
 	ocservGroup := router.Group("/ocserv")
 	ocservGroup.Use(middlewares.TokenMiddleware())
 	ocservGroup.POST("/", ocserv.Create)
+	ocservGroup.PATCH("/:id/", ocserv.Update)
+	ocservGroup.DELETE("/:id/", ocserv.Delete)
+	ocservGroup.POST("/:id/disconnect/", ocserv.Disconnect)
 }

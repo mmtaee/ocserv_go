@@ -28,12 +28,12 @@ func NewUserController() *Controller {
 // @Description  Set up an admin or superuser during site initialization
 // @Tags         user
 // @Produce      json
-// @Param        user  body      CreateData  true  "Request Body"
-// @Success      200  {object}  CreateResponse
+// @Param        user  body      CreateUserBody  true  "Request Body"
+// @Success      200  {object}  CreateUserResponse
 // @Failure      400  {object}  nil
 // @Router       /api/v1/users/ [post]
 func (controller *Controller) CreateAdminUser(c *gin.Context) {
-	var data CreateData
+	var data CreateUserBody
 
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, errors.InvalidBodyError(err))
@@ -60,7 +60,7 @@ func (controller *Controller) CreateAdminUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, CreateResponse{
+	c.JSON(http.StatusCreated, CreateUserResponse{
 		ID:       newUser.ID,
 		Username: newUser.Username,
 		IsAdmin:  newUser.IsAdmin,
@@ -72,12 +72,12 @@ func (controller *Controller) CreateAdminUser(c *gin.Context) {
 // @Description  Login admin or staff user to get token
 // @Tags         user
 // @Produce      json
-// @Param        user  body CreateLoginData  true  "Request Body"
+// @Param        user  body CreateLoginBody  true  "Request Body"
 // @Success      201 {object} LoginResponse
 // @Failure      400  {object}  nil
 // @Router       /api/v1/users/login/ [post]
 func (controller *Controller) Login(c *gin.Context) {
-	var data CreateLoginData
+	var data CreateLoginBody
 
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, errors.InvalidBodyError(err))
@@ -117,13 +117,13 @@ func (controller *Controller) Login(c *gin.Context) {
 // @Description  Update admin or staff user password (self change)
 // @Tags         user
 // @Produce      json
-// @Param        user  body UpdateData  true  "Request Body"
+// @Param        user  body UpdateUserPasswordBody  true  "Request Body"
 // @Param        Authorization header string true "Bearer token"
 // @Success      202
 // @Failure      400  {object}  nil
 // @Router       /api/v1/users/password/ [patch]
 func (controller *Controller) UpdatePassword(c *gin.Context) {
-	var data UpdateData
+	var data UpdateUserPasswordBody
 
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, errors.InvalidBodyError(err))
@@ -150,14 +150,14 @@ func (controller *Controller) UpdatePassword(c *gin.Context) {
 // @Description  Create staff user
 // @Tags         user
 // @Produce      json
-// @Param        user  body CreateStaffData  true  "Request Body"
+// @Param        user  body CreateUserBody  true  "Request Body"
 // @Param        Authorization header string true "Bearer token"
-// @Success      201 {object} CreateResponse
+// @Success      201 {object} CreateUserResponse
 // @Failure      403 {object} nil "Admin Permission required"
 // @Failure      400  {object}  nil
 // @Router       /api/v1/users/staffs/ [post]
 func (controller *Controller) CreateStaff(c *gin.Context) {
-	var data CreateStaffData
+	var data CreateUserBody
 
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, errors.InvalidBodyError(err))
@@ -174,7 +174,7 @@ func (controller *Controller) CreateStaff(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, CreateResponse{
+	c.JSON(http.StatusCreated, CreateUserResponse{
 		ID:       newUser.ID,
 		Username: newUser.Username,
 		IsAdmin:  newUser.IsAdmin,
@@ -186,7 +186,7 @@ func (controller *Controller) CreateStaff(c *gin.Context) {
 // @Description  Update staff user password(by admin)
 // @Tags         user
 // @Produce      json
-// @Param        user  body UpdateStaffPasswordData  true  "Request Body"
+// @Param        user  body UpdateStaffPasswordBody  true  "Request Body"
 // @Param        Authorization header string true "Bearer token"
 // @Success      202
 // @Failure      400  {object}  nil
@@ -194,7 +194,7 @@ func (controller *Controller) CreateStaff(c *gin.Context) {
 // @Failure      404 {object} nil "User not found"
 // @Router       /api/v1/users/staffs/:id/password/ [patch]
 func (controller *Controller) UpdateStaffPassword(c *gin.Context) {
-	var data UpdateStaffPasswordData
+	var data UpdateStaffPasswordBody
 
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, errors.InvalidBodyError(err))
@@ -222,7 +222,6 @@ func (controller *Controller) UpdateStaffPassword(c *gin.Context) {
 // @Description  Delete staff user(by admin)
 // @Tags         user
 // @Produce      json
-// @Param        user  body UpdateData  true  "Request Body"
 // @Param        Authorization header string true "Bearer token"
 // @Success      204
 // @Failure      404  {object}  nil

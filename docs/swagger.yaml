@@ -1,4 +1,47 @@
 definitions:
+  models.OcservUser:
+    properties:
+      created_at:
+        type: integer
+      default_traffic:
+        type: number
+      expire_at:
+        type: integer
+      group:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      is_online:
+        type: boolean
+      password:
+        type: string
+      rx:
+        type: number
+      traffic_type:
+        $ref: '#/definitions/models.ServiceTypeEnum'
+      tx:
+        type: number
+      updated_at:
+        type: integer
+      username:
+        type: string
+    type: object
+  models.ServiceTypeEnum:
+    enum:
+    - FREE
+    - MONTHLY
+    - TOTALLY
+    type: string
+    x-enum-comments:
+      FREE: The user uses the service without restrictions
+      MONTHLY: The user uses the service with a monthly usage limit
+      TOTALLY: The user uses the service with a limited Rx-TX
+    x-enum-varnames:
+    - FREE
+    - MONTHLY
+    - TOTALLY
   models.Site:
     properties:
       captcha_secret_key:
@@ -10,7 +53,66 @@ definitions:
       id:
         type: integer
     type: object
-  site.CreateData:
+  ocserv.CreateOcservUserBody:
+    properties:
+      default_traffic:
+        type: number
+      expire_at:
+        type: integer
+      group:
+        type: string
+      is_active:
+        enum:
+        - true
+        - false
+        type: boolean
+      password:
+        maxLength: 12
+        minLength: 4
+        type: string
+      traffic_type:
+        allOf:
+        - $ref: '#/definitions/models.ServiceTypeEnum'
+        enum:
+        - FREE
+        - MONTHLY
+        - TOTALLY
+      username:
+        maxLength: 8
+        minLength: 4
+        type: string
+    required:
+    - default_traffic
+    - group
+    - traffic_type
+    - username
+    type: object
+  ocserv.UpdateOcservUserBody:
+    properties:
+      default_traffic:
+        type: number
+      expire_at:
+        type: integer
+      group:
+        type: string
+      is_active:
+        enum:
+        - true
+        - false
+        type: boolean
+      password:
+        maxLength: 12
+        minLength: 4
+        type: string
+      traffic_type:
+        allOf:
+        - $ref: '#/definitions/models.ServiceTypeEnum'
+        enum:
+        - FREE
+        - MONTHLY
+        - TOTALLY
+    type: object
+  site.CreateSiteBody:
     properties:
       captcha_secret_key:
         type: string
@@ -21,7 +123,7 @@ definitions:
     required:
     - default_traffic
     type: object
-  site.UpdateData:
+  site.UpdateSiteBody:
     properties:
       captcha_secret_key:
         type: string
@@ -30,17 +132,7 @@ definitions:
       default_traffic:
         type: number
     type: object
-  user.CreateData:
-    properties:
-      password:
-        type: string
-      username:
-        type: string
-    required:
-    - password
-    - username
-    type: object
-  user.CreateLoginData:
+  user.CreateLoginBody:
     properties:
       password:
         type: string
@@ -52,7 +144,17 @@ definitions:
     - password
     - username
     type: object
-  user.CreateResponse:
+  user.CreateUserBody:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  user.CreateUserResponse:
     properties:
       id:
         type: integer
@@ -63,16 +165,6 @@ definitions:
     required:
     - username
     type: object
-  user.CreateStaffData:
-    properties:
-      password:
-        type: string
-      username:
-        type: string
-    required:
-    - password
-    - username
-    type: object
   user.LoginResponse:
     properties:
       expire_at:
@@ -80,7 +172,14 @@ definitions:
       token:
         type: string
     type: object
-  user.UpdateData:
+  user.UpdateStaffPasswordBody:
+    properties:
+      password:
+        type: string
+    required:
+    - password
+    type: object
+  user.UpdateUserPasswordBody:
     properties:
       current_password:
         type: string
@@ -90,16 +189,96 @@ definitions:
     - current_password
     - new_password
     type: object
-  user.UpdateStaffPasswordData:
-    properties:
-      password:
-        type: string
-    required:
-    - password
-    type: object
 info:
   contact: {}
 paths:
+  /api/v1/ocserv/:
+    post:
+      description: Create Ocserv User
+      parameters:
+      - description: Request Body
+        in: body
+        name: site
+        required: true
+        schema:
+          $ref: '#/definitions/ocserv.CreateOcservUserBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.OcservUser'
+        "400":
+          description: Bad Request
+      summary: Create Ocserv User
+      tags:
+      - ocserv user
+  /api/v1/ocserv/:id/:
+    delete:
+      description: Delete ocserv user
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      summary: Delete ocserv user
+      tags:
+      - ocserv user
+    patch:
+      description: Update Ocserv User
+      parameters:
+      - description: Request Body
+        in: body
+        name: site
+        required: true
+        schema:
+          $ref: '#/definitions/ocserv.UpdateOcservUserBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.OcservUser'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      summary: Update Ocserv User
+      tags:
+      - ocserv user
+  /api/v1/ocserv/:id/disconnect/:
+    post:
+      description: Disconnect ocserv user
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      summary: Disconnect ocserv user
+      tags:
+      - ocserv user
   /api/v1/site/:
     get:
       description: Get site configuration
@@ -127,7 +306,7 @@ paths:
         in: body
         name: site
         schema:
-          $ref: '#/definitions/site.UpdateData'
+          $ref: '#/definitions/site.UpdateSiteBody'
       produces:
       - application/json
       responses:
@@ -150,7 +329,7 @@ paths:
         name: site
         required: true
         schema:
-          $ref: '#/definitions/site.CreateData'
+          $ref: '#/definitions/site.CreateSiteBody'
       produces:
       - application/json
       responses:
@@ -172,14 +351,14 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/user.CreateData'
+          $ref: '#/definitions/user.CreateUserBody'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.CreateResponse'
+            $ref: '#/definitions/user.CreateUserResponse'
         "400":
           description: Bad Request
       summary: Set up an admin user
@@ -194,7 +373,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/user.CreateLoginData'
+          $ref: '#/definitions/user.CreateLoginBody'
       produces:
       - application/json
       responses:
@@ -216,7 +395,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/user.UpdateData'
+          $ref: '#/definitions/user.UpdateUserPasswordBody'
       - description: Bearer token
         in: header
         name: Authorization
@@ -241,7 +420,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/user.CreateStaffData'
+          $ref: '#/definitions/user.CreateUserBody'
       - description: Bearer token
         in: header
         name: Authorization
@@ -253,7 +432,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/user.CreateResponse'
+            $ref: '#/definitions/user.CreateUserResponse'
         "400":
           description: Bad Request
         "403":
@@ -265,12 +444,6 @@ paths:
     delete:
       description: Delete staff user(by admin)
       parameters:
-      - description: Request Body
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/user.UpdateData'
       - description: Bearer token
         in: header
         name: Authorization
@@ -297,7 +470,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/user.UpdateStaffPasswordData'
+          $ref: '#/definitions/user.UpdateStaffPasswordBody'
       - description: Bearer token
         in: header
         name: Authorization

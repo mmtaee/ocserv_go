@@ -1,31 +1,26 @@
 package user
 
-type CreateData struct {
+type CreateUserBody struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
-type UpdateData struct {
+type UpdateUserPasswordBody struct {
 	CurrentPassword string `json:"current_password" binding:"required"`
 	NewPassword     string `json:"new_password" binding:"required"`
 }
 
-type UpdateStaffPasswordData struct {
+type UpdateStaffPasswordBody struct {
 	Password string `json:"password" binding:"required"`
 }
 
-type CreateResponse struct {
+type CreateUserResponse struct {
 	ID       uint   `json:"id"`
 	Username string `json:"username" binding:"required"`
 	IsAdmin  bool   `json:"is_admin"`
 }
 
-type CreateStaffData struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-
-type CreateLoginData struct {
+type CreateLoginBody struct {
 	Username   string `json:"username" binding:"required"`
 	Password   string `json:"password" binding:"required"`
 	RememberMe bool   `json:"remember_me"`

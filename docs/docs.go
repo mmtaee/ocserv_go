@@ -15,6 +15,139 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/ocserv/": {
+            "post": {
+                "description": "Create Ocserv User",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ocserv user"
+                ],
+                "summary": "Create Ocserv User",
+                "parameters": [
+                    {
+                        "description": "Request Body",
+                        "name": "site",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ocserv.CreateOcservUserBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.OcservUser"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
+        "/api/v1/ocserv/:id/": {
+            "delete": {
+                "description": "Delete ocserv user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ocserv user"
+                ],
+                "summary": "Delete ocserv user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update Ocserv User",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ocserv user"
+                ],
+                "summary": "Update Ocserv User",
+                "parameters": [
+                    {
+                        "description": "Request Body",
+                        "name": "site",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ocserv.UpdateOcservUserBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.OcservUser"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/v1/ocserv/:id/disconnect/": {
+            "post": {
+                "description": "Disconnect ocserv user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ocserv user"
+                ],
+                "summary": "Disconnect ocserv user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
         "/api/v1/site/": {
             "get": {
                 "description": "Get site configuration",
@@ -53,7 +186,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/site.CreateData"
+                            "$ref": "#/definitions/site.CreateSiteBody"
                         }
                     }
                 ],
@@ -91,7 +224,7 @@ const docTemplate = `{
                         "name": "site",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/site.UpdateData"
+                            "$ref": "#/definitions/site.UpdateSiteBody"
                         }
                     }
                 ],
@@ -128,7 +261,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.CreateData"
+                            "$ref": "#/definitions/user.CreateUserBody"
                         }
                     }
                 ],
@@ -136,7 +269,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/user.CreateResponse"
+                            "$ref": "#/definitions/user.CreateUserResponse"
                         }
                     },
                     "400": {
@@ -162,7 +295,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.CreateLoginData"
+                            "$ref": "#/definitions/user.CreateLoginBody"
                         }
                     }
                 ],
@@ -196,7 +329,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.UpdateData"
+                            "$ref": "#/definitions/user.UpdateUserPasswordBody"
                         }
                     },
                     {
@@ -234,7 +367,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.CreateStaffData"
+                            "$ref": "#/definitions/user.CreateUserBody"
                         }
                     },
                     {
@@ -249,7 +382,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/user.CreateResponse"
+                            "$ref": "#/definitions/user.CreateUserResponse"
                         }
                     },
                     "400": {
@@ -272,15 +405,6 @@ const docTemplate = `{
                 ],
                 "summary": "Delete staff",
                 "parameters": [
-                    {
-                        "description": "Request Body",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/user.UpdateData"
-                        }
-                    },
                     {
                         "type": "string",
                         "description": "Bearer token",
@@ -319,7 +443,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.UpdateStaffPasswordData"
+                            "$ref": "#/definitions/user.UpdateStaffPasswordBody"
                         }
                     },
                     {
@@ -348,6 +472,68 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.OcservUser": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "integer"
+                },
+                "default_traffic": {
+                    "type": "number"
+                },
+                "expire_at": {
+                    "type": "integer"
+                },
+                "group": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "is_online": {
+                    "type": "boolean"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "rx": {
+                    "type": "number"
+                },
+                "traffic_type": {
+                    "$ref": "#/definitions/models.ServiceTypeEnum"
+                },
+                "tx": {
+                    "type": "number"
+                },
+                "updated_at": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ServiceTypeEnum": {
+            "type": "string",
+            "enum": [
+                "FREE",
+                "MONTHLY",
+                "TOTALLY"
+            ],
+            "x-enum-comments": {
+                "FREE": "The user uses the service without restrictions",
+                "MONTHLY": "The user uses the service with a monthly usage limit",
+                "TOTALLY": "The user uses the service with a limited Rx-TX"
+            },
+            "x-enum-varnames": [
+                "FREE",
+                "MONTHLY",
+                "TOTALLY"
+            ]
+        },
         "models.Site": {
             "type": "object",
             "properties": {
@@ -365,7 +551,94 @@ const docTemplate = `{
                 }
             }
         },
-        "site.CreateData": {
+        "ocserv.CreateOcservUserBody": {
+            "type": "object",
+            "required": [
+                "default_traffic",
+                "group",
+                "traffic_type",
+                "username"
+            ],
+            "properties": {
+                "default_traffic": {
+                    "type": "number"
+                },
+                "expire_at": {
+                    "type": "integer"
+                },
+                "group": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean",
+                    "enum": [
+                        true,
+                        false
+                    ]
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 12,
+                    "minLength": 4
+                },
+                "traffic_type": {
+                    "enum": [
+                        "FREE",
+                        "MONTHLY",
+                        "TOTALLY"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.ServiceTypeEnum"
+                        }
+                    ]
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 8,
+                    "minLength": 4
+                }
+            }
+        },
+        "ocserv.UpdateOcservUserBody": {
+            "type": "object",
+            "properties": {
+                "default_traffic": {
+                    "type": "number"
+                },
+                "expire_at": {
+                    "type": "integer"
+                },
+                "group": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean",
+                    "enum": [
+                        true,
+                        false
+                    ]
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 12,
+                    "minLength": 4
+                },
+                "traffic_type": {
+                    "enum": [
+                        "FREE",
+                        "MONTHLY",
+                        "TOTALLY"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.ServiceTypeEnum"
+                        }
+                    ]
+                }
+            }
+        },
+        "site.CreateSiteBody": {
             "type": "object",
             "required": [
                 "default_traffic"
@@ -382,7 +655,7 @@ const docTemplate = `{
                 }
             }
         },
-        "site.UpdateData": {
+        "site.UpdateSiteBody": {
             "type": "object",
             "properties": {
                 "captcha_secret_key": {
@@ -396,22 +669,7 @@ const docTemplate = `{
                 }
             }
         },
-        "user.CreateData": {
-            "type": "object",
-            "required": [
-                "password",
-                "username"
-            ],
-            "properties": {
-                "password": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "user.CreateLoginData": {
+        "user.CreateLoginBody": {
             "type": "object",
             "required": [
                 "password",
@@ -429,7 +687,22 @@ const docTemplate = `{
                 }
             }
         },
-        "user.CreateResponse": {
+        "user.CreateUserBody": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.CreateUserResponse": {
             "type": "object",
             "required": [
                 "username"
@@ -440,21 +713,6 @@ const docTemplate = `{
                 },
                 "is_admin": {
                     "type": "boolean"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "user.CreateStaffData": {
-            "type": "object",
-            "required": [
-                "password",
-                "username"
-            ],
-            "properties": {
-                "password": {
-                    "type": "string"
                 },
                 "username": {
                     "type": "string"
@@ -472,7 +730,18 @@ const docTemplate = `{
                 }
             }
         },
-        "user.UpdateData": {
+        "user.UpdateStaffPasswordBody": {
+            "type": "object",
+            "required": [
+                "password"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.UpdateUserPasswordBody": {
             "type": "object",
             "required": [
                 "current_password",
@@ -483,17 +752,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "new_password": {
-                    "type": "string"
-                }
-            }
-        },
-        "user.UpdateStaffPasswordData": {
-            "type": "object",
-            "required": [
-                "password"
-            ],
-            "properties": {
-                "password": {
                     "type": "string"
                 }
             }

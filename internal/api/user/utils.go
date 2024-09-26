@@ -6,7 +6,7 @@ import (
 	"ocserv/pkg/password"
 )
 
-func Authenticate(repository repository.UserRepositoryInterface, data CreateLoginData) (*models.User, bool) {
+func Authenticate(repository repository.UserRepositoryInterface, data CreateLoginBody) (*models.User, bool) {
 	user, err := repository.GetUserByUsername(data.Username)
 	if err != nil {
 		return nil, false
