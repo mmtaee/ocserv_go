@@ -1,29 +1,11 @@
-FROM golang:1.23 AS builder
+FROM alpine:latest
 
 ENV GIN_MODE=release
 ENV CGO_ENABLED=0
 ENV GOOS=linux
 
-WORKDIR /app
-
-COPY go.mod go.sum ./
-
-RUN go mod download
-
-COPY . .
-
-RUN go build -o ocserv_api .
-
-FROM alpine:latest
-
 RUN mkdir -p /app
 
-WORKDIR /app
+COPY ./api /app/api
 
-COPY --from=builder /app/ocserv_api .
-
-COPY ./scripts/server.sh /server.sh
-
-RUN chmod +x /app/ocserv_api /server.sh
-
-CMD ["/server.sh"]
+CMD ["sh", "-c", "/app/api migrate && /app/api serve"]
