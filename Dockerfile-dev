@@ -20,7 +20,7 @@ RUN mkdir -p /app
 
 WORKDIR /app
 
-COPY  ocserv_api .
+COPY --from=builder /app/ocserv_api .
 
 COPY ./scripts/server.sh /server.sh
 
