@@ -43,5 +43,5 @@ go run main.go test -v
 # benchmark testing
 go run main.go test -b 
 
-go build -o ocserv_api cmd/main.go 
+GIN_MODE=release CGO_ENABLED=0 GOOS=linux go build -o api main.go
 ```

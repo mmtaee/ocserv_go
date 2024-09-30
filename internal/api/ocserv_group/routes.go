@@ -7,6 +7,6 @@ func Routes(router *gin.RouterGroup) {
 	group := router.Group("/ocserv/groups")
 	group.GET("/", ocservGroup.List)
 	group.POST("/", ocservGroup.Create)
-	group.PATCH("/:id/", ocservGroup.Update)
-	group.DELETE("/:id/", ocservGroup.Delete)
+	group.PATCH("/:name/", ocservGroup.Update)
+	group.DELETE("/:name/", ocservGroup.Delete)
 }
