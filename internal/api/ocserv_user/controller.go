@@ -36,6 +36,7 @@ func (controller *Controller) Create(c *gin.Context) {
 		return
 	}
 	user := models.OcservUser{
+		Group:          data.Group,
 		Username:       data.Username,
 		Password:       data.Password,
 		IsActive:       data.IsActive,
