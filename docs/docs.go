@@ -32,7 +32,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ocserv.CreateOcservUserBody"
+                            "$ref": "#/definitions/ocserv_user.CreateOcservUserBody"
                         }
                     }
                 ],
@@ -96,7 +96,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ocserv.UpdateOcservUserBody"
+                            "$ref": "#/definitions/ocserv_user.UpdateOcservUserBody"
                         }
                     }
                 ],
@@ -551,7 +551,7 @@ const docTemplate = `{
                 }
             }
         },
-        "ocserv.CreateOcservUserBody": {
+        "ocserv_user.CreateOcservUserBody": {
             "type": "object",
             "required": [
                 "default_traffic",
@@ -600,7 +600,7 @@ const docTemplate = `{
                 }
             }
         },
-        "ocserv.UpdateOcservUserBody": {
+        "ocserv_user.UpdateOcservUserBody": {
             "type": "object",
             "properties": {
                 "default_traffic": {

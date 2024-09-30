@@ -53,7 +53,7 @@ definitions:
       id:
         type: integer
     type: object
-  ocserv.CreateOcservUserBody:
+  ocserv_user.CreateOcservUserBody:
     properties:
       default_traffic:
         type: number
@@ -87,7 +87,7 @@ definitions:
     - traffic_type
     - username
     type: object
-  ocserv.UpdateOcservUserBody:
+  ocserv_user.UpdateOcservUserBody:
     properties:
       default_traffic:
         type: number
@@ -201,7 +201,7 @@ paths:
         name: site
         required: true
         schema:
-          $ref: '#/definitions/ocserv.CreateOcservUserBody'
+          $ref: '#/definitions/ocserv_user.CreateOcservUserBody'
       produces:
       - application/json
       responses:
@@ -243,7 +243,7 @@ paths:
         name: site
         required: true
         schema:
-          $ref: '#/definitions/ocserv.UpdateOcservUserBody'
+          $ref: '#/definitions/ocserv_user.UpdateOcservUserBody'
       produces:
       - application/json
       responses:

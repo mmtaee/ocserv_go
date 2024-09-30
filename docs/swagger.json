@@ -21,7 +21,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ocserv.CreateOcservUserBody"
+                            "$ref": "#/definitions/ocserv_user.CreateOcservUserBody"
                         }
                     }
                 ],
@@ -85,7 +85,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ocserv.UpdateOcservUserBody"
+                            "$ref": "#/definitions/ocserv_user.UpdateOcservUserBody"
                         }
                     }
                 ],
@@ -540,7 +540,7 @@
                 }
             }
         },
-        "ocserv.CreateOcservUserBody": {
+        "ocserv_user.CreateOcservUserBody": {
             "type": "object",
             "required": [
                 "default_traffic",
@@ -589,7 +589,7 @@
                 }
             }
         },
-        "ocserv.UpdateOcservUserBody": {
+        "ocserv_user.UpdateOcservUserBody": {
             "type": "object",
             "properties": {
                 "default_traffic": {
