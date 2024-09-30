@@ -6,24 +6,24 @@ import (
 	"ocserv/pkg/database"
 )
 
-type OcservRepository struct {
+type OcservUserRepository struct {
 	db *gorm.DB
 }
 
-type OcservRepositoryInterface interface {
+type OcservUserRepositoryInterface interface {
 	GetUserByID(int) (*models.OcservUser, error)
 	CreateUser(*models.OcservUser) (*models.OcservUser, error)
 	UpdateUser(*models.OcservUser) (*models.OcservUser, error)
 	DeleteUser(uint) error
 }
 
-func NewOcservRepository() *OcservRepository {
-	return &OcservRepository{
+func NewOcservUserRepository() *OcservUserRepository {
+	return &OcservUserRepository{
 		db: database.Connection(),
 	}
 }
 
-func (o *OcservRepository) GetUserByID(ocservUserID int) (*models.OcservUser, error) {
+func (o *OcservUserRepository) GetUserByID(ocservUserID int) (*models.OcservUser, error) {
 	ch := make(chan struct {
 		ocservUser *models.OcservUser
 		err        error
@@ -41,7 +41,7 @@ func (o *OcservRepository) GetUserByID(ocservUserID int) (*models.OcservUser, er
 	return result.ocservUser, result.err
 }
 
-func (o *OcservRepository) CreateUser(ocservUser *models.OcservUser) (*models.OcservUser, error) {
+func (o *OcservUserRepository) CreateUser(ocservUser *models.OcservUser) (*models.OcservUser, error) {
 	ch := make(chan struct {
 		ocservUser *models.OcservUser
 		err        error
@@ -60,7 +60,7 @@ func (o *OcservRepository) CreateUser(ocservUser *models.OcservUser) (*models.Oc
 	return result.ocservUser, result.err
 }
 
-func (o *OcservRepository) UpdateUser(ocservUser *models.OcservUser) (*models.OcservUser, error) {
+func (o *OcservUserRepository) UpdateUser(ocservUser *models.OcservUser) (*models.OcservUser, error) {
 	ch := make(chan struct {
 		ocservUser *models.OcservUser
 		err        error
@@ -79,7 +79,7 @@ func (o *OcservRepository) UpdateUser(ocservUser *models.OcservUser) (*models.Oc
 	return result.ocservUser, result.err
 }
 
-func (o *OcservRepository) DeleteUser(ocservUserID uint) error {
+func (o *OcservUserRepository) DeleteUser(ocservUserID uint) error {
 	ch := make(chan error, 1)
 
 	go func() {

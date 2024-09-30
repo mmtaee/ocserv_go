@@ -1,4 +1,4 @@
-package ocserv
+package ocserv_user
 
 import (
 	"github.com/gin-gonic/gin"
@@ -6,11 +6,11 @@ import (
 )
 
 func Routes(router *gin.RouterGroup) {
-	ocserv := NewOcservController()
-	ocservGroup := router.Group("/ocserv")
-	ocservGroup.Use(middlewares.TokenMiddleware())
-	ocservGroup.POST("/", ocserv.Create)
-	ocservGroup.PATCH("/:id/", ocserv.Update)
-	ocservGroup.DELETE("/:id/", ocserv.Delete)
-	ocservGroup.POST("/:id/disconnect/", ocserv.Disconnect)
+	ocservUser := NewOcservUserController()
+	group := router.Group("/ocserv/users/")
+	group.Use(middlewares.TokenMiddleware())
+	group.POST("/", ocservUser.Create)
+	group.PATCH("/:id/", ocservUser.Update)
+	group.DELETE("/:id/", ocservUser.Delete)
+	group.POST("/:id/disconnect/", ocservUser.Disconnect)
 }

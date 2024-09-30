@@ -43,4 +43,5 @@ go run main.go test -v
 # benchmark testing
 go run main.go test -b 
 
+go build -o ocserv_api cmd/main.go 
 ```

@@ -1,4 +1,4 @@
-package ocserv
+package ocserv_user
 
 import "ocserv/internal/models"
 

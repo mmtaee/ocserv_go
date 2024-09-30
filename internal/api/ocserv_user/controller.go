@@ -1,4 +1,4 @@
-package ocserv
+package ocserv_user
 
 import (
 	"github.com/gin-gonic/gin"
@@ -11,12 +11,12 @@ import (
 )
 
 type Controller struct {
-	ocservRepository repository.OcservRepositoryInterface
+	ocservRepository repository.OcservUserRepositoryInterface
 }
 
-func NewOcservController() *Controller {
+func NewOcservUserController() *Controller {
 	return &Controller{
-		ocservRepository: repository.NewOcservRepository(),
+		ocservRepository: repository.NewOcservUserRepository(),
 	}
 }
 
