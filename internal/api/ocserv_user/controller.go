@@ -11,12 +11,12 @@ import (
 )
 
 type Controller struct {
-	ocservRepository repository.OcservUserRepositoryInterface
+	ocservUserRepository repository.OcservUserRepositoryInterface
 }
 
 func NewOcservUserController() *Controller {
 	return &Controller{
-		ocservRepository: repository.NewOcservUserRepository(),
+		ocservUserRepository: repository.NewOcservUserRepository(),
 	}
 }
 
@@ -24,11 +24,12 @@ func NewOcservUserController() *Controller {
 // @Summary      Create Ocserv User
 // @Description  Create Ocserv User
 // @Tags          ocserv user
+// @Param        Authorization header string true "Bearer token"
 // @Produce      json
 // @Param        site  body     CreateOcservUserBody  true  "Request Body"
 // @Success      201  {object}  models.OcservUser
 // @Failure      400  {object}  nil
-// @Router       /api/v1/ocserv/ [post]
+// @Router       /api/v1/ocserv/users/ [post]
 func (controller *Controller) Create(c *gin.Context) {
 	var data CreateOcservUserBody
 	if err := c.ShouldBindJSON(&data); err != nil {
@@ -44,7 +45,7 @@ func (controller *Controller) Create(c *gin.Context) {
 		TrafficType:    data.TrafficType,
 		ExpireAt:       data.ExpireAt,
 	}
-	createdUser, err := controller.ocservRepository.CreateUser(&user)
+	createdUser, err := controller.ocservUserRepository.CreateUser(&user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -57,11 +58,12 @@ func (controller *Controller) Create(c *gin.Context) {
 // @Description  Update Ocserv User
 // @Tags         ocserv user
 // @Produce      json
+// @Param        Authorization header string true "Bearer token"
 // @Param        site  body     UpdateOcservUserBody  true  "Request Body"
 // @Success      200  {object}  models.OcservUser
 // @Failure      400  {object}  nil
 // @Failure      404  {object}  nil
-// @Router       /api/v1/ocserv/:id/ [patch]
+// @Router       /api/v1/ocserv/users/:id/ [patch]
 func (controller *Controller) Update(c *gin.Context) {
 	var data UpdateOcservUserBody
 	if err := c.ShouldBindJSON(&data); err != nil {
@@ -74,7 +76,7 @@ func (controller *Controller) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid ocserv user id"})
 		return
 	}
-	ocservUser, err := controller.ocservRepository.GetUserByID(ocservUserID)
+	ocservUser, err := controller.ocservUserRepository.GetUserByID(ocservUserID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "ocserv user not found"})
 		return
@@ -95,7 +97,7 @@ func (controller *Controller) Update(c *gin.Context) {
 	if data.TrafficType != "" {
 		ocservUser.TrafficType = data.TrafficType
 	}
-	createdUser, err := controller.ocservRepository.UpdateUser(ocservUser)
+	createdUser, err := controller.ocservUserRepository.UpdateUser(ocservUser)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -112,7 +114,7 @@ func (controller *Controller) Update(c *gin.Context) {
 // @Success      204
 // @Failure      400  {object}  nil
 // @Failure      404  {object}  nil
-// @Router       /api/v1/ocserv/:id/ [delete]
+// @Router       /api/v1/ocserv/users/:id/ [delete]
 func (controller *Controller) Delete(c *gin.Context) {
 	ocservUserIDStr := c.Param("id")
 	ocservUserID, err := strconv.Atoi(ocservUserIDStr)
@@ -120,12 +122,12 @@ func (controller *Controller) Delete(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid ocserv user id"})
 		return
 	}
-	ocservUser, err := controller.ocservRepository.GetUserByID(ocservUserID)
+	ocservUser, err := controller.ocservUserRepository.GetUserByID(ocservUserID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "ocserv user not found"})
 		return
 	}
-	err = controller.ocservRepository.DeleteUser(ocservUser.ID)
+	err = controller.ocservUserRepository.DeleteUser(ocservUser.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -142,7 +144,7 @@ func (controller *Controller) Delete(c *gin.Context) {
 // @Success      202  {object}  nil
 // @Failure      400  {object}  nil
 // @Failure		 404  {object}  nil
-// @Router       /api/v1/ocserv/:id/disconnect/ [post]
+// @Router       /api/v1/ocserv/users/:id/disconnect/ [post]
 func (controller *Controller) Disconnect(c *gin.Context) {
 	ocservUserIDStr := c.Param("id")
 	ocservUserID, err := strconv.Atoi(ocservUserIDStr)
@@ -150,7 +152,7 @@ func (controller *Controller) Disconnect(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid ocserv user id"})
 		return
 	}
-	ocservUser, err := controller.ocservRepository.GetUserByID(ocservUserID)
+	ocservUser, err := controller.ocservUserRepository.GetUserByID(ocservUserID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "ocserv user not found"})
 		return

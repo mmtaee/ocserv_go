@@ -53,6 +53,58 @@ definitions:
       id:
         type: integer
     type: object
+  ocserv_group.CreateOcservGroupData:
+    properties:
+      config:
+        $ref: '#/definitions/ocserv_group.GroupConfig'
+      group_name:
+        type: string
+    required:
+    - group_name
+    type: object
+  ocserv_group.GroupConfig:
+    properties:
+      dns:
+        items:
+          type: string
+        type: array
+      dpd:
+        type: integer
+      idle_timeout:
+        type: integer
+      ipv4_network:
+        type: string
+      keepalive:
+        type: integer
+      max_same_clients:
+        type: integer
+      mobile_dpd:
+        type: integer
+      mobile_idle_timeout:
+        type: integer
+      mtu:
+        type: integer
+      no_routes:
+        items:
+          type: string
+        type: array
+      no_udp:
+        type: boolean
+      restrict_user_to_routes:
+        type: boolean
+      routes:
+        items:
+          type: string
+        type: array
+      rx_data_per_sec:
+        type: integer
+      session_timeout:
+        type: integer
+      tunnel_all_dns:
+        type: boolean
+      tx_data_per_sec:
+        type: integer
+    type: object
   ocserv_user.CreateOcservUserBody:
     properties:
       default_traffic:
@@ -192,10 +244,105 @@ definitions:
 info:
   contact: {}
 paths:
-  /api/v1/ocserv/:
+  /api/v1/ocserv/groups/:
+    get:
+      description: List Ocserv Group
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: List Ocserv Group
+      tags:
+      - ocserv group
+    post:
+      description: Create Ocserv Group
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Request Body
+        in: body
+        name: site
+        required: true
+        schema:
+          $ref: '#/definitions/ocserv_group.CreateOcservGroupData'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+      summary: Create Ocserv Group
+      tags:
+      - ocserv group
+  /api/v1/ocserv/groups/:name/:
+    delete:
+      description: Delete Ocserv Group
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+      summary: Delete Ocserv Group
+      tags:
+      - ocserv group
+    patch:
+      description: Update Ocserv Group
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Request Body
+        in: body
+        name: site
+        required: true
+        schema:
+          $ref: '#/definitions/ocserv_group.GroupConfig'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      summary: Update Ocserv Group
+      tags:
+      - ocserv group
+  /api/v1/ocserv/users/:
     post:
       description: Create Ocserv User
       parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Request Body
         in: body
         name: site
@@ -214,7 +361,7 @@ paths:
       summary: Create Ocserv User
       tags:
       - ocserv user
-  /api/v1/ocserv/:id/:
+  /api/v1/ocserv/users/:id/:
     delete:
       description: Delete ocserv user
       parameters:
@@ -238,6 +385,11 @@ paths:
     patch:
       description: Update Ocserv User
       parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Request Body
         in: body
         name: site
@@ -258,7 +410,7 @@ paths:
       summary: Update Ocserv User
       tags:
       - ocserv user
-  /api/v1/ocserv/:id/disconnect/:
+  /api/v1/ocserv/users/:id/disconnect/:
     post:
       description: Disconnect ocserv user
       parameters:

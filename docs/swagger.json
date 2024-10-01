@@ -4,7 +4,143 @@
         "contact": {}
     },
     "paths": {
-        "/api/v1/ocserv/": {
+        "/api/v1/ocserv/groups/": {
+            "get": {
+                "description": "List Ocserv Group",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ocserv group"
+                ],
+                "summary": "List Ocserv Group",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create Ocserv Group",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ocserv group"
+                ],
+                "summary": "Create Ocserv Group",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Request Body",
+                        "name": "site",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ocserv_group.CreateOcservGroupData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
+        "/api/v1/ocserv/groups/:name/": {
+            "delete": {
+                "description": "Delete Ocserv Group",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ocserv group"
+                ],
+                "summary": "Delete Ocserv Group",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update Ocserv Group",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ocserv group"
+                ],
+                "summary": "Update Ocserv Group",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Request Body",
+                        "name": "site",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ocserv_group.GroupConfig"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/v1/ocserv/users/": {
             "post": {
                 "description": "Create Ocserv User",
                 "produces": [
@@ -15,6 +151,13 @@
                 ],
                 "summary": "Create Ocserv User",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "Request Body",
                         "name": "site",
@@ -38,7 +181,7 @@
                 }
             }
         },
-        "/api/v1/ocserv/:id/": {
+        "/api/v1/ocserv/users/:id/": {
             "delete": {
                 "description": "Delete ocserv user",
                 "produces": [
@@ -80,6 +223,13 @@
                 "summary": "Update Ocserv User",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Request Body",
                         "name": "site",
                         "in": "body",
@@ -105,7 +255,7 @@
                 }
             }
         },
-        "/api/v1/ocserv/:id/disconnect/": {
+        "/api/v1/ocserv/users/:id/disconnect/": {
             "post": {
                 "description": "Disconnect ocserv user",
                 "produces": [
@@ -536,6 +686,85 @@
                     "type": "number"
                 },
                 "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "ocserv_group.CreateOcservGroupData": {
+            "type": "object",
+            "required": [
+                "group_name"
+            ],
+            "properties": {
+                "config": {
+                    "$ref": "#/definitions/ocserv_group.GroupConfig"
+                },
+                "group_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "ocserv_group.GroupConfig": {
+            "type": "object",
+            "properties": {
+                "dns": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "dpd": {
+                    "type": "integer"
+                },
+                "idle_timeout": {
+                    "type": "integer"
+                },
+                "ipv4_network": {
+                    "type": "string"
+                },
+                "keepalive": {
+                    "type": "integer"
+                },
+                "max_same_clients": {
+                    "type": "integer"
+                },
+                "mobile_dpd": {
+                    "type": "integer"
+                },
+                "mobile_idle_timeout": {
+                    "type": "integer"
+                },
+                "mtu": {
+                    "type": "integer"
+                },
+                "no_routes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "no_udp": {
+                    "type": "boolean"
+                },
+                "restrict_user_to_routes": {
+                    "type": "boolean"
+                },
+                "routes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "rx_data_per_sec": {
+                    "type": "integer"
+                },
+                "session_timeout": {
+                    "type": "integer"
+                },
+                "tunnel_all_dns": {
+                    "type": "boolean"
+                },
+                "tx_data_per_sec": {
                     "type": "integer"
                 }
             }
