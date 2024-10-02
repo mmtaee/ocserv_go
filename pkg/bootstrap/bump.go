@@ -151,7 +151,7 @@ func (b *bumpStruct) createTag(newTag string) {
 		Email: cfg.User.Email,
 		When:  time.Now(),
 	}
-	userAccept("create tag")
+	userAccept("create tag " + newTag)
 	tagRef, err := b.repo.CreateTag(newTag, headRef.Hash(), &git.CreateTagOptions{
 		Tagger:  tagger,
 		Message: fmt.Sprintf("Version %s release", newTag),
@@ -169,7 +169,7 @@ func (b *bumpStruct) pushTag(newTag string) {
 			config.RefSpec("refs/tags/" + newTag + ":refs/tags/" + newTag),
 		},
 	}
-	userAccept("push tag")
+	userAccept("push tag " + newTag)
 	err := b.repo.Push(pushOpt)
 	if err != nil {
 		bumpError(err)
@@ -180,7 +180,7 @@ func (b *bumpStruct) pushTag(newTag string) {
 func userAccept(text string) {
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Print(fmt.Sprintf("Are you sure you want to %s? (yes/no): ", text))
-	if !scanner.Scan() {
+	if scanner.Scan() {
 		input := strings.TrimSpace(strings.ToLower(scanner.Text()))
 		if input == "yes" || input == "y" {
 			fmt.Println("Proceeding with the operation...")
