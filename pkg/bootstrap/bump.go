@@ -1,75 +1,50 @@
-package cmd
+package bootstrap
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
-	"github.com/spf13/cobra"
-	"ocserv/pkg/bootstrap"
 	"os"
 	"strconv"
 	"strings"
 	"time"
 )
 
-var (
-	patch bool
-	minor bool
-	major bool
-)
-
-func init() {
-	rootCmd.AddCommand(bumpCmd)
-	bumpCmd.Flags().BoolVarP(&minor, "minor", "m", false, "Minor version")
-	bumpCmd.Flags().BoolVarP(&major, "major", "j", false, "Major version")
+type bumpStruct struct {
+	repo *git.Repository
 }
 
-type bump struct {
-	r *git.Repository
-}
-
-var bumpCmd = &cobra.Command{
-	Use:   "bump",
-	Short: "Bump version",
-	Long:  "Bump Version and push in git",
-	Run: func(cmd *cobra.Command, args []string) {
-
-		Bump()
-		//Bump(&bump{
-		//	r: r,
-		//})
-	},
-}
-
-func Bump() {
-	if !minor && !major {
-		fmt.Println("Setting patch version")
-		patch = true
-	} else if minor {
-		fmt.Println("Setting minor version")
-	} else {
-		fmt.Println("Setting major version")
+func newBump() *bumpStruct {
+	fmt.Println("Opening repository")
+	repo, err := git.PlainOpen(".")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
-	bootstrap.Bump(patch, minor, major)
+	return &bumpStruct{
+		repo: repo,
+	}
 }
 
-//func Bump(b *bump) {
-//	_ = b.validateWorkTree()
-//	newTag := b.getNewTag()
-//	b.createTag(newTag)
-//	b.pushTag(newTag)
-//}
+func Bump(patch, minor, major bool) {
+	bump := newBump()
+	_ = bump.validateWorkTree()
+	newTag := bump.getNewTag(patch, minor, major)
+	bump.createTag(newTag)
+	bump.pushTag(newTag)
+}
 
 func bumpError(err error) {
 	fmt.Println(err)
 	os.Exit(1)
 }
 
-func (b *bump) validateWorkTree() *git.Worktree {
-	w, err := b.r.Worktree()
+func (b *bumpStruct) validateWorkTree() *git.Worktree {
+	w, err := b.repo.Worktree()
 	if err != nil {
 		bumpError(err)
 	}
@@ -84,7 +59,7 @@ func (b *bump) validateWorkTree() *git.Worktree {
 	}
 
 	fmt.Println("Fetching tags")
-	err = b.r.Fetch(&git.FetchOptions{
+	err = b.repo.Fetch(&git.FetchOptions{
 		RemoteName: "origin",
 		Tags:       git.AllTags,
 	})
@@ -102,8 +77,8 @@ func (b *bump) validateWorkTree() *git.Worktree {
 	return w
 }
 
-func (b *bump) getNewTag() string {
-	tags, err := b.r.Tags()
+func (b *bumpStruct) getNewTag(patch, minor, major bool) string {
+	tags, err := b.repo.Tags()
 	if err != nil {
 		bumpError(err)
 	}
@@ -146,18 +121,18 @@ func (b *bump) getNewTag() string {
 	return "v" + strings.Trim(strings.Replace(fmt.Sprint(tagDelimiters), " ", ".", -1), "[]")
 }
 
-func (b *bump) createTag(newTag string) {
-	headRef, err := b.r.Head()
+func (b *bumpStruct) createTag(newTag string) {
+	headRef, err := b.repo.Head()
 	if err != nil {
 		bumpError(err)
 	}
 
-	cfg, err := b.r.ConfigScoped(config.SystemScope)
+	cfg, err := b.repo.ConfigScoped(config.SystemScope)
 	if err != nil {
 		bumpError(err)
 	}
 	if cfg.User.Name == "" || cfg.User.Email == "" {
-		globalCfg, err := b.r.ConfigScoped(config.GlobalScope)
+		globalCfg, err := b.repo.ConfigScoped(config.GlobalScope)
 		if err != nil {
 			bumpError(err)
 		}
@@ -176,8 +151,8 @@ func (b *bump) createTag(newTag string) {
 		Email: cfg.User.Email,
 		When:  time.Now(),
 	}
-
-	tagRef, err := b.r.CreateTag(newTag, headRef.Hash(), &git.CreateTagOptions{
+	userAccept("create tag")
+	tagRef, err := b.repo.CreateTag(newTag, headRef.Hash(), &git.CreateTagOptions{
 		Tagger:  tagger,
 		Message: fmt.Sprintf("Version %s release", newTag),
 	})
@@ -187,16 +162,35 @@ func (b *bump) createTag(newTag string) {
 	fmt.Println("tag created: ", tagRef.Strings())
 }
 
-func (b *bump) pushTag(newTag string) {
+func (b *bumpStruct) pushTag(newTag string) {
 	pushOpt := &git.PushOptions{
 		RemoteName: "origin",
 		RefSpecs: []config.RefSpec{
 			config.RefSpec("refs/tags/" + newTag + ":refs/tags/" + newTag),
 		},
 	}
-	err := b.r.Push(pushOpt)
+	userAccept("push tag")
+	err := b.repo.Push(pushOpt)
 	if err != nil {
 		bumpError(err)
 	}
 	fmt.Println("push succeeded")
+}
+
+func userAccept(text string) {
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Print(fmt.Sprintf("Are you sure you want to %s? (yes/no): ", text))
+	if !scanner.Scan() {
+		input := strings.TrimSpace(strings.ToLower(scanner.Text()))
+		if input == "yes" || input == "y" {
+			fmt.Println("Proceeding with the operation...")
+		} else {
+			fmt.Println("Operation aborted by the user.")
+			os.Exit(0)
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		fmt.Println("Error reading input:", err)
+		os.Exit(1)
+	}
 }
