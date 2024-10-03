@@ -3,23 +3,26 @@ package repository
 import (
 	"gorm.io/gorm"
 	"ocserv/internal/models"
+	"ocserv/internal/repository/ocserv"
 	"ocserv/pkg/database"
 )
 
 type OcservUserRepository struct {
-	db *gorm.DB
+	db  *gorm.DB
+	cmd ocserv.ServiceOcservRepositoryInterface
 }
 
 type OcservUserRepositoryInterface interface {
 	GetUserByID(int) (*models.OcservUser, error)
 	CreateUser(*models.OcservUser) (*models.OcservUser, error)
 	UpdateUser(*models.OcservUser) (*models.OcservUser, error)
-	DeleteUser(uint) error
+	DeleteUser(uint, string) error
 }
 
 func NewOcservUserRepository() *OcservUserRepository {
 	return &OcservUserRepository{
-		db: database.Connection(),
+		db:  database.Connection(),
+		cmd: ocserv.NewOcservRepository(),
 	}
 }
 
@@ -47,6 +50,11 @@ func (o *OcservUserRepository) CreateUser(ocservUser *models.OcservUser) (*model
 		err        error
 	}, 1)
 
+	err := o.cmd.CreateOrUpdateUser(ocservUser.Group, ocservUser.Username, ocservUser.Password)
+	if err != nil {
+		return nil, err
+	}
+
 	go func() {
 		err := o.db.Create(ocservUser).Error
 		ch <- struct {
@@ -54,8 +62,6 @@ func (o *OcservUserRepository) CreateUser(ocservUser *models.OcservUser) (*model
 			err        error
 		}{ocservUser, err}
 	}()
-
-	//	TODO: call ocserv service
 	result := <-ch
 	return result.ocservUser, result.err
 }
@@ -66,6 +72,11 @@ func (o *OcservUserRepository) UpdateUser(ocservUser *models.OcservUser) (*model
 		err        error
 	}, 1)
 
+	err := o.cmd.CreateOrUpdateUser(ocservUser.Group, ocservUser.Username, ocservUser.Password)
+	if err != nil {
+		return nil, err
+	}
+
 	go func() {
 		err := o.db.Updates(&ocservUser).Error
 		ch <- struct {
@@ -73,15 +84,16 @@ func (o *OcservUserRepository) UpdateUser(ocservUser *models.OcservUser) (*model
 			err        error
 		}{ocservUser, err}
 	}()
-
-	//	TODO: call ocserv service
 	result := <-ch
 	return result.ocservUser, result.err
 }
 
-func (o *OcservUserRepository) DeleteUser(ocservUserID uint) error {
+func (o *OcservUserRepository) DeleteUser(ocservUserID uint, ocservUsername string) error {
 	ch := make(chan error, 1)
-
+	err := o.cmd.DeleteUser(ocservUsername)
+	if err != nil {
+		return err
+	}
 	go func() {
 		ch <- o.db.Delete(&models.OcservUser{}, ocservUserID).Error
 	}()

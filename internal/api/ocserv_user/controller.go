@@ -127,7 +127,7 @@ func (controller *Controller) Delete(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "ocserv user not found"})
 		return
 	}
-	err = controller.ocservUserRepository.DeleteUser(ocservUser.ID)
+	err = controller.ocservUserRepository.DeleteUser(ocservUser.ID, ocservUser.Username)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

@@ -20,6 +20,7 @@ type App struct {
 	Port         string
 	SecretKey    string
 	AllowOrigins []string
+	Hook         bool
 }
 
 type Db struct {
@@ -74,6 +75,13 @@ func Set() {
 		app.Debug = true
 	} else {
 		app.Debug = debug == 1
+	}
+
+	hook, err := strconv.Atoi(os.Getenv("HOOK"))
+	if err != nil {
+		app.Hook = true
+	} else {
+		app.Hook = hook == 1
 	}
 
 	db := Db{
