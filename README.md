@@ -44,4 +44,11 @@ go run main.go test -v
 go run main.go test -b 
 
 GIN_MODE=release CGO_ENABLED=0 GOOS=linux go build -o api main.go
+
+# minor or major
+go run main.go bump -m/--minor -j/--major
+
+# patch
+go run main.go bump
+
 ```
